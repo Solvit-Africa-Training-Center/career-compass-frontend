@@ -1,0 +1,51 @@
+{
+  "name": "Career Compass Project",
+  "desc": "Project management for Career Compass app with deadline 18th Sept",
+  "lists": [
+    {
+      "name": "Backlog",
+      "cards": [
+        { "name": "Finalize Use Case & Flowchart", "desc": "Ensure diagrams align with MVP scope" },
+        { "name": "Set up Django Project", "desc": "Initialize Django backend structure" },
+        { "name": "Set up React Project", "desc": "Initialize React with Vite or CRA, add dependencies" },
+        { "name": "Create Wireframes", "desc": "Design login, dashboard, profile, recommendation screens" },
+        { "name": "Define Database Schema", "desc": "Models: User, Career, Recommendation" }
+      ]
+    },
+    {
+      "name": "To Do (Week 1)",
+      "cards": [
+        { "name": "UI/UX: Wireframes for core pages", "desc": "Login, Register, Dashboard, Profile" },
+        { "name": "Backend: Django setup & auth API", "desc": "JWT or Django Auth implementation" },
+        { "name": "Frontend: Project setup & static UI", "desc": "Basic layout components" }
+      ]
+    },
+    {
+      "name": "In Progress",
+      "cards": [
+        { "name": "Backend: Profile API", "desc": "Create CRUD endpoints for profile" },
+        { "name": "Frontend: Dashboard UI", "desc": "Responsive layout and cards" }
+      ]
+    },
+    {
+      "name": "Review/Testing",
+      "cards": [
+        { "name": "API Testing in Postman", "desc": "Check authentication and profile endpoints" },
+        { "name": "UI Testing", "desc": "Ensure components match design" }
+      ]
+    },
+    {
+      "name": "Done",
+      "cards": []
+    }
+  ],
+  "labels": [
+    { "name": "UI/UX", "color": "blue" },
+    { "name": "Backend", "color": "green" },
+    { "name": "Frontend", "color": "orange" },
+    { "name": "Integration", "color": "purple" },
+    { "name": "Testing", "color": "red" },
+    { "name": "Deployment", "color": "yellow" }
+  ]
+}
+
