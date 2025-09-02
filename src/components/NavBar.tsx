@@ -4,7 +4,9 @@ const navigation = {
     home: 'Home',
     features: 'Features',
     about: 'About',
-    howItWorks: 'How It Works'
+    howItWorks: 'How It Works',
+    contact:'Contact Us'
+    
 };
 const NavBar = () => {
     const [isOpen, setIsOpen] = useState(false)
