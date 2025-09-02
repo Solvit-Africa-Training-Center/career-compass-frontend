@@ -1,3 +1,4 @@
+import { BookOpen } from 'lucide-react';
 import React, { useState } from 'react';
 const navigation = {
     home: 'Home',
@@ -12,8 +13,10 @@ const NavBar = () => {
             <header>
                 <nav className="flex justify-between items-center mx-auto px-7 py-7 border-b-1">
                     <div className="flex gap-2 justify-center items-center text-2xl font-bold">
-                        <img src="/src/assets/logo-1.jpg" alt="Logo" className='w-12 h-12 rounded-full'/>
-                        Career <span className="text-primarycolor-500 ">Campus</span>
+                        {/* <img src="/src/assets/logo-1.jpg" alt="Logo" className='w-12 h-12 rounded-full'/>
+                        Career <span className="text-primarycolor-500 ">Campus</span> */}
+                        <BookOpen className='text-primarycolor-500' size={32} />
+                        <h1>Career <span className="text-primarycolor-500 ">Campus</span></h1>
                     </div>
                     {/* Desktop Navigation */}
                     <ul className="hidden md:flex space-x-7">

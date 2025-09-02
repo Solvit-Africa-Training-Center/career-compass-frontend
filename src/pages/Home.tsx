@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 // import ProgramSection from '@/cards/programCard';
 // import ProgramCard from '@/components/cards/programCard';
 import NavBar from '@/components/NavBar';
+import Testimony from '@/components/Testimony';
 import Welcome from '@/components/Welcome';
 
 
@@ -74,8 +75,8 @@ const Home = () => {
                 </div>
             </div>
         </div>
-
-
+    {/* Testimonial */}
+        <Testimony />
         {/* Footer */}
         <Footer />
      </div>
