@@ -18,7 +18,7 @@ const NavBar = () => {
                         {/* <img src="/src/assets/logo-1.jpg" alt="Logo" className='w-12 h-12 rounded-full'/>
                         Career <span className="text-primarycolor-500 ">Campus</span> */}
                         <BookOpen className='text-primarycolor-500' size={32} />
-                        <h1>Career <span className="text-primarycolor-500 ">Compus</span></h1>
+                        <h1>Career <span className="text-primarycolor-500 ">Compass</span></h1>
                     </div>
                     {/* Desktop Navigation */}
                     <ul className="hidden md:flex space-x-7">

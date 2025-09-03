@@ -30,7 +30,7 @@ const Footer = () => {
           <div className="md:col-span-1">
             <div className='flex gap-3 items-center mb-4'>
               <BookOpen className='text-primarycolor-500' size={32} />
-              <h2 className="text-xl md:text-2xl font-bold">Career Campus</h2>
+              <h2 className="text-xl md:text-2xl font-bold">Career<span className='text-primarycolor-500'>Compass</span> </h2>
             </div>
             <p className="text-sm md:text-base text-gray-600 leading-relaxed">
               Navigate future with intelligent technology and personalized guidance for education success
@@ -51,7 +51,7 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="pt-6 md:pt-8 border-t border-gray-300 text-center">
-          <p className="text-xs md:text-sm text-gray-600">© 2025 Career Campus. All rights reserved. Empowering education journey with AI</p>
+          <p className="text-xs md:text-sm text-gray-600">© 2025 Career Compass. All rights reserved. Empowering education journey with AI</p>
         </div>
       </div>
     </footer>
