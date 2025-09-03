@@ -22,7 +22,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-neutralcolor-200 py-8 md:py-12 px-4">
+    <footer className="bg-gray-50 border-t-1 py-8 md:py-12 px-4">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Links */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">

@@ -7,31 +7,31 @@ const Testimony = () => {
     {
       name: "Ineza Mark",
       role: "Biology student",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+      avatar: "./src/assets/welcome1.jpg",
       text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry'standard Lorem Ipsum has been the industry'standard."
     },
     {
       name: "Uwase Monique", 
-      role: "Retailer",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
+      role: "Student",
+      avatar: "./src/assets/welcome1.jpg",
       text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry'standard Lorem Ipsum has been the industry'standard."
     },
     {
       name: "Abdul Aziz",
-      role: "Photographer", 
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      role: "Agent", 
+      avatar: "./src/assets/welcome1.jpg",
       text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry'standard Lorem Ipsum has been the industry'standard."
     },
     {
       name: "Sarah Johnson",
-      role: "Designer",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face", 
+      role: "Student",
+      avatar: "./src/assets/welcome1.jpg", 
       text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry'standard Lorem Ipsum has been the industry'standard."
     },
     {
       name: "Mike Chen",
-      role: "Developer",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
+      role: "Student",
+      avatar: "./src/assets/welcome1.jpg",
       text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry'standard Lorem Ipsum has been the industry'standard."
     }
   ];
@@ -42,7 +42,7 @@ const Testimony = () => {
     <div className="max-w-7xl mx-auto px-4 py-12">
       <h2 className="text-3xl font-bold text-center text-primarycolor-500 mb-12">What they say about us</h2>
       
-      <div className="overflow-hidden">
+      <div className="overflow-hidden py-12">
         <div 
           className="flex transition-transform duration-500"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}

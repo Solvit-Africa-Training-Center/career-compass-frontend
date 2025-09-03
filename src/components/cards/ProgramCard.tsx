@@ -45,25 +45,25 @@ const ProgramSection: React.FC = () => {
       title: "I'm a student",
       description: 'Find your perfect program and school match',
       buttonText: 'Get started',
-      cardColor: 'bg-blue-500',
+      cardColor: 'bg-primarycolor-500',
       buttonStyle:
-        'bg-transparent border border-white text-white hover:bg-white hover:text-blue-500',
+        'bg-transparent border border-white text-white hover:bg-white hover:text-primarycolor-500',
     },
     {
       title: "I'm an Institution",
       description:
         'Showcase programs, manage applications, and connect with students',
       buttonText: 'Register',
-      cardColor: 'bg-blue-600',
+      cardColor: 'bg-primarycolor-700',
       buttonStyle: 'bg-yellow-400 text-black hover:bg-yellow-500',
     },
     {
       title: "I'm an Agent",
       description: 'Guide students, earn commissions, and access career tools',
       buttonText: 'Join Us',
-      cardColor: 'bg-blue-500',
+      cardColor: 'bg-primarycolor-500',
       buttonStyle:
-        'bg-transparent border border-white text-white hover:bg-white hover:text-blue-500',
+        'bg-transparent border border-white text-white hover:bg-white hover:text-primarycolor-500',
     },
   ];
 

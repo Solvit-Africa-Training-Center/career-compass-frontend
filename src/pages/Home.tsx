@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 // import ProgramSection from '@/cards/programCard';
 // import ProgramCard from '@/components/cards/programCard';
 import NavBar from '@/components/NavBar';
+import Stats from '@/components/Stats';
 import Testimony from '@/components/Testimony';
 import Welcome from '@/components/Welcome';
 
@@ -19,26 +20,7 @@ const Home = () => {
      </div>
      <div className='mx-auto'>
         {/* statistics */}
-        <div className='bg-primarycolor-800 py-8 px-4'>
-            <div className='max-w-6xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8'>
-                <div className='text-center space-y-2'>
-                    <h1 className='text-secondarycolor-300 text-2xl md:text-3xl font-bold'>150+</h1>
-                    <p className='text-white text-sm md:text-base'>Students Placed</p>
-                </div>
-                <div className='text-center space-y-2'>
-                    <h1 className='text-secondarycolor-300 text-2xl md:text-3xl font-bold'>10+</h1>
-                    <p className='text-white text-sm md:text-base'>Partner Institutions</p>
-                </div>
-                <div className='text-center space-y-2'>
-                    <h1 className='text-secondarycolor-300 text-2xl md:text-3xl font-bold'>11+</h1>
-                    <p className='text-white text-sm md:text-base'>Agents</p>
-                </div>
-                <div className='text-center space-y-2'>
-                    <h1 className='text-secondarycolor-300 text-2xl md:text-3xl font-bold'>90%</h1>
-                    <p className='text-white text-sm md:text-base'>Success Rate</p>
-                </div>
-            </div>
-        </div>
+        <Stats />
      
         {/* Features */}
         <ProgramAI />
