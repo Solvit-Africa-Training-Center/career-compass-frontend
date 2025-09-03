@@ -30,7 +30,7 @@ const Footer = () => {
           <div className="md:col-span-1">
             <div className='flex gap-3 items-center mb-4'>
               <BookOpen className='text-primarycolor-500' size={32} />
-              <h2 className="text-xl md:text-2xl font-bold">Career<span className='text-primarycolor-500'>Compass</span> </h2>
+              <h2 className="text-xl md:text-2xl font-bold">Career <span className='text-primarycolor-500'>Compass</span> </h2>
             </div>
             <p className="text-sm md:text-base text-gray-600 leading-relaxed">
               Navigate future with intelligent technology and personalized guidance for education success
