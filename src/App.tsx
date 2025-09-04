@@ -9,8 +9,8 @@ function App() {
     <>
       {/* <Button /> */}
       {/* <Button>Search</Button> */}
-      <Home />
-      {/* <About/> */}
+      {/* <Home /> */}
+      <About/>
     
     </>
   )
