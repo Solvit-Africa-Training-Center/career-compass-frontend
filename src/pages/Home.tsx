@@ -13,20 +13,22 @@ const Home = () => {
   return (
     <>
       <NavBar />
-      {/* <hr /> */}
-      <Welcome />
-     <div className='bg-primarycolor-100 h-auto'>
+      <section id="home">
+        <Welcome />
+      </section>
+     <section id="features" className='bg-primarycolor-100 h-auto'>
         <ProgramSection />
-     </div>
+     </section>
      <div className='mx-auto'>
         {/* statistics */}
         <Stats />
      
-        {/* Features */}
-        <ProgramAI />
+        <section id="about">
+          <ProgramAI />
+        </section>
 
     {/* How Career Compass work */}
-        <div className='bg-secondarycolor-50 py-8 px-4'>
+        <section id="howItWorks" className='bg-secondarycolor-50 py-8 px-4'>
             <div className='max-w-6xl mx-auto'>
                 <h1 className='text-primarycolor-500 text-2xl md:text-3xl text-center'>How career Compass works</h1>
                 <p className='text-center py-4 text-sm md:text-base max-w-2xl mx-auto'>Our AI-powered platform guides you through every step of your educational journey.</p>
@@ -56,11 +58,11 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-        </div>
-    {/* Testimonial */}
+        </section>
         <Testimony />
-        {/* Footer */}
-        <Footer />
+        <section id="contact">
+          <Footer />
+        </section>
      </div>
     </>
 
