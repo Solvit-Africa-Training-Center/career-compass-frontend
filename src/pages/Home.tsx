@@ -15,7 +15,7 @@ const Home = () => {
   return (
     <>
       <NavBar />
-      <section id="home">
+      <section id="home" className='pt-16'>
         <Welcome />
       </section>
      <section id="features" className={`h-auto transition-colors ${isDark ? 'bg-primarycolor-800' : 'bg-primarycolor-100'}`}>

@@ -25,7 +25,7 @@ const NavBar = () => {
   };
   return (
     <>
-      <header className={`flex-shrink-0 ${isDark ? 'bg-primarycolor-900' : 'bg-white'}`}>
+      <header className={`fixed top-0 left-0 right-0 z-50 flex-shrink-0 ${isDark ? 'bg-primarycolor-900' : 'bg-white'}`}>
         <nav className={`flex justify-between items-center max-w-6xl mx-auto px-4 md:px-7 py-4 md:py-7 border-b transition-colors ${isDark ? 'border-gray-700 bg-primarycolor-900' : 'border-gray-200 bg-white'}`}>
           <div className={`flex gap-2 items-center text-xl md:text-2xl font-bold ${isDark ? 'text-white' : 'text-black'}`}>
             <BookOpen className="text-primarycolor-500" size={32} />
