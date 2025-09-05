@@ -1,5 +1,6 @@
 
 import EmailVerification from '@/components/EmailVerification';
+import ForgotPassword from '@/components/ForgotPassword';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import React from 'react';
@@ -21,6 +22,7 @@ const AppRoute = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/reset-password" element={<ForgotPassword />} />
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
       </Routes>
     </>

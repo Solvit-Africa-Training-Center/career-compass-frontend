@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import LogoHeader from "@/components/LogoHeader";
 
 const Register = () => {
   const { register, loading, errors } = useAuth();
@@ -26,6 +27,8 @@ const Register = () => {
   };
 
   return (
+    <>
+    <LogoHeader />
     <div className="min-h-screen flex items-center justify-center px-4 py-8">
       <div className="max-w-xl w-full rounded-2xl shadow-xl border px-8 md:px-12 py-12 bg-white">
         <h1 className="text-3xl md:text-4xl font-bold uppercase text-center text-primarycolor-500 mb-3">
@@ -116,6 +119,7 @@ const Register = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 
