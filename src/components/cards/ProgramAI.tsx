@@ -7,6 +7,7 @@ import {
   FileText,
   Network,
 } from "lucide-react";
+import { useTheme } from "@/hooks/useTheme";
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -15,16 +16,18 @@ interface FeatureCardProps {
 }
 
 const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) => {
+  const {isDark}= useTheme()
   return (
-    <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 text-center hover:shadow-md transition-all">
-      <div className="flex justify-center mb-4 text-blue-600">{icon}</div>
-      <h3 className="font-semibold text-lg mb-3">{title}</h3>
-      <p className="text-gray-600 text-sm">{description}</p>
+    <div className={`rounded-xl border shadow-sm p-6 text-center hover:shadow-md transition-all ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
+      <div className="flex justify-center mb-4">{icon}</div>
+      <h3 className={`font-semibold text-lg mb-3 ${isDark ? 'text-white' : 'text-black'}`}>{title}</h3>
+      <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>{description}</p>
     </div>
   );
 };
 
 const ProgramAI: React.FC = () => {
+  const { isDark } = useTheme();
   const features = [
     {
       icon: <GraduationCap size={36} className="text-primarycolor-500"/>,
@@ -65,14 +68,14 @@ const ProgramAI: React.FC = () => {
   ];
 
   return (
-    <section className="py-16 px-4 bg-white">
+    <section className={`py-16 px-4 transition-colors ${isDark ? 'bg-primarycolor-900' : 'bg-white'}`}>
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-yellow-500 mb-4">
             Powered by Advanced AI
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className={`max-w-2xl mx-auto ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
             Our intelligent algorithms analyze your profile, predict eligibility,
             and match you with the perfect educational opportunities.
           </p>
