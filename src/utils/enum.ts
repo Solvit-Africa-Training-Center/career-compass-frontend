@@ -1,4 +1,5 @@
 export const backend_path={
+    // authentication
     REGISTER:'api/auth/register/',
     LOGIN:'api/auth/login/',
     VERIFY_OTP:'api/auth/verify-otp/',
@@ -8,4 +9,6 @@ export const backend_path={
     CHANGE_PASSWORD:'api/auth/change-password/',
     LOGOUT:'api/auth/logout/',
     REFRESH_TOKEN:'api/auth/refresh-token/',
+
+    // 
 }

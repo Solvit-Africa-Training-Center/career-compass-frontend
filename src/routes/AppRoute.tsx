@@ -17,7 +17,7 @@ const AppRoute = () => {
       {/* {!hideNavbar && <NavBar />} */}
 
       <Routes>
-        {/* <Route path="/" element={<LandingPage />} /> */}
+        <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/login" element={<Login />} />

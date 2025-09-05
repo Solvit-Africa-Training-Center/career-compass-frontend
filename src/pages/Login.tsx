@@ -3,11 +3,11 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/checkbox"
 import { Eye, EyeOff } from "lucide-react";
-import type { Users } from "@/types";
+import type { User } from "@/types";
 const Login = () => {
 
 
-  const [form, setForm] = useState<Users>({
+  const [form, setForm] = useState<User>({
     email:"",
     password:"",
   })
@@ -16,7 +16,7 @@ const Login = () => {
 
 const handleChange=(
   e: React.ChangeEvent<HTMLInputElement>,
-  field: keyof Users
+  field: keyof User
 ) => {
   const { value } = e.target;
   setForm((prev) => ({ ...prev, [field]: value }));
