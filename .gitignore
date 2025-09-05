@@ -24,6 +24,6 @@ dist-ssr
 *.sw?
 .env
 CHAT.md
-FRONTEND_TASKS.md
 PLANNING.md
 TASK.md
+FRONTEND_TASKS.md
