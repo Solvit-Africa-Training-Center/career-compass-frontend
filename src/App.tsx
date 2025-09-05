@@ -1,15 +1,10 @@
-import Home from "@/pages/Home"
-
-
+import AppRoute from "./routes/AppRoute"
 
 function App() {
 
   return (
     <>
-      {/* <Button /> */}
-      {/* <Button>Search</Button> */}
-      <Home />
-    
+      <AppRoute />
     </>
   )
 }

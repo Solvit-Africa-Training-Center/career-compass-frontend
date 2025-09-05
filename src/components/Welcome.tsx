@@ -1,9 +1,13 @@
 import React from 'react';
 import { Button } from './ui/Button';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@/hooks/useTheme';
 
 const Welcome = () => {
+  const navigate = useNavigate()
+  const { isDark,toggleTheme } = useTheme();
   return (
-    <div className="py-8 md:py-16 px-4">
+    <div className={`py-8 md:py-16 px-4 transition-colors ${isDark ? 'bg-primarycolor-900' : 'bg-white'}`}>
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           {/* Text Content */}
@@ -11,10 +15,13 @@ const Welcome = () => {
             <h1 className="font-bold text-primarycolor-500 text-2xl md:text-3xl lg:text-4xl uppercase mb-4 md:mb-6 leading-tight">
               Navigate Your Educational Journey with Confidence
             </h1>
-            <p className="text-gray-700 text-base md:text-lg lg:text-xl mb-6 md:mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+            <p className={`text-base md:text-lg lg:text-xl mb-6 md:mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0 transition-colors ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               Connect students with perfect academic programs worldwide. Our AI-powered platform matches profiles, predicts eligibility, and guides career decisions for students, institutions, and recruiters.
             </p>
-            <Button className="bg-primarycolor-500 hover:bg-primarycolor-700 text-white font-semibold py-3 px-6 md:py-4 md:px-8 rounded-md transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl">
+            <Button 
+              className="bg-primarycolor-500 hover:bg-primarycolor-700 text-white font-semibold py-3 px-6 md:py-4 md:px-8 rounded-md transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
+              onClick={() => navigate('/register')}
+            >
               Register Now
             </Button>
             
@@ -23,8 +30,8 @@ const Welcome = () => {
           {/* Image Content */}
           <div className="w-full lg:w-1/2 mt-8 lg:mt-0">
             <div className="relative max-w-md mx-auto lg:max-w-none">
-              <div className="bg-white p-4 md:p-6 rounded-2xl shadow-2xl transform rotate-1 lg:rotate-2">
-                <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl overflow-hidden">
+              <div className={`p-4 md:p-6 rounded-2xl shadow-2xl transform rotate-1 lg:rotate-2 transition-colors ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+                <div className={`rounded-xl overflow-hidden transition-colors ${isDark ? 'bg-gradient-to-br from-gray-700 to-gray-600' : 'bg-gradient-to-br from-blue-100 to-purple-100'}`}>
                   <img 
                     src="./src/assets/welcome1.jpg"
                     alt="Students collaborating on education journey"

@@ -23,7 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 .env
-CHAT.md
-PLANNING.md
+FRONTEND_TASKS.md
 TASK.md
 FRONTEND_TASKS.md
