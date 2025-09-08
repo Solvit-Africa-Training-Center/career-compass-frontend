@@ -68,9 +68,9 @@ const EmailVerification = () => {
   }, []);
 
   return (
-    <>
+    <div className='min-h-screen'>
     <LogoHeader />
-    <div className="min-h-screen flex items-center justify-center px-4 py-8">
+    <div className=" flex items-center justify-center px-4 py-8">
       <div className="max-w-xl w-full rounded-2xl shadow-xl border px-8 md:px-12 py-12 bg-white">
         <h1 className="text-primarycolor-500 text-2xl md:text-3xl text-center uppercase font-bold mb-4">
           OTP Verification
@@ -129,7 +129,7 @@ const EmailVerification = () => {
         </div>
       </div>
     </div>
-    </>
+    </div>
   );
 };
 

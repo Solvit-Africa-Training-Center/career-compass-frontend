@@ -2,9 +2,9 @@
 import EmailVerification from '@/components/EmailVerification';
 import ForgotPassword from '@/components/ForgotPassword';
 import Home from '@/pages/Home';
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
-import React from 'react';
+import Login from '@/pages/auth/Login';
+import Register from '@/pages/auth/Register';
+
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 const AppRoute = () => {

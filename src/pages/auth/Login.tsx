@@ -32,9 +32,9 @@ const handleSubmit = (e: React.FormEvent) => {
     console.log("Login form:", { ...form, rememberMe });
   };
   return (
-    <>
+    <div className="min-h-screen">
     <LogoHeader />
-    <div className="min-h-screen flex items-center justify-center px-4 py-8">
+    <div className=" flex items-center justify-center px-4 py-8">
       
       <div className="max-w-lg w-full rounded-2xl shadow-xl border px-8 md:px-12 py-12 bg-white">
         <h1 className="text-center text-3xl md:text-4xl text-primarycolor-500 font-bold mb-8">Welcome Back</h1>
@@ -104,7 +104,7 @@ const handleSubmit = (e: React.FormEvent) => {
       </div>
     </div>
       
-    </>
+    </div>
   );
 }
 
