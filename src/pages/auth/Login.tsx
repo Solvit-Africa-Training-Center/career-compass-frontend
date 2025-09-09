@@ -2,34 +2,29 @@ import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/checkbox"
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import type { User } from "@/types";
 import  LogoHeader from "@/components/LogoHeader";
+import { useAuth } from "@/hooks/useAuth";
 const Login = () => {
-
-
-  const [form, setForm] = useState<User>({
+const {login,loading}=useAuth()
+  const [formData, setFormData] = useState({
     email:"",
     password:"",
   })
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
-
 const handleChange=(
   e: React.ChangeEvent<HTMLInputElement>,
   field: keyof User
 ) => {
   const { value } = e.target;
-  setForm((prev) => ({ ...prev, [field]: value }));
+  setFormData((prev) => ({ ...prev, [field]: value }));
 };
 const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    //   alert("Passwords do not match");
-    //   return;
-    // }
-    // API call can go here later
-    console.log("Login form:", { ...form, rememberMe });
+    login(formData)
+    console.log("Login form submitted");
   };
   return (
     <div className="min-h-screen">
@@ -43,8 +38,9 @@ const handleSubmit = (e: React.FormEvent) => {
             <label className="block text-sm font-medium mb-2 text-gray-700">Email</label>
             <Input
               type="email"
+              name="email"
               placeholder="Enter your email"
-              value={form.email}
+              value={formData.email}
               onChange={(e) => handleChange(e, "email")}
               className="h-12 text-base"
               required
@@ -57,7 +53,7 @@ const handleSubmit = (e: React.FormEvent) => {
             <Input
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              value={form.password}
+              value={formData.password}
               onChange={(e) => handleChange(e, "password")}
               className="h-12 text-base pr-12"
               required
@@ -77,6 +73,7 @@ const handleSubmit = (e: React.FormEvent) => {
                 id="remember-me" 
                 checked={rememberMe}
                 onCheckedChange={(checked) => setRememberMe(checked === true)}
+                className="text-primarycolor-500 "
               />
               <label htmlFor="remember-me" className="cursor-pointer">Remember me </label>
             </div>
@@ -86,9 +83,17 @@ const handleSubmit = (e: React.FormEvent) => {
 
           <Button
             type="submit"
-            className="w-full h-12 mt-8 bg-primarycolor-500 hover:bg-primarycolor-600 text-white font-semibold text-base rounded-md transition-colors duration-300"
+            disabled={loading}
+            className="w-full h-12 mt-8 bg-primarycolor-500 hover:bg-primarycolor-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-base rounded-md transition-colors duration-300"
           >
-            Login
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-12 w-12 animate-spin" />
+                
+              </>
+            ) : (
+              "Login"
+            )}
           </Button>
         </form>
 

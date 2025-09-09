@@ -3,7 +3,9 @@ export const backend_path={
     REGISTER:'api/auth/register/',
     LOGIN:'api/auth/login/',
     VERIFY_EMAIL:'api/auth/verify-email/',
+    //http://127.0.0.1:8000/api/auth/verify-email/
     VERIFY_OTP:'api/auth/verify-otp/',
+    
     RESEND_OTP:'api/auth/resend-otp/',
     FORGOT_PASSWORD:'api/auth/forgot-password/',
     RESET_PASSWORD:'api/auth/reset-password/',

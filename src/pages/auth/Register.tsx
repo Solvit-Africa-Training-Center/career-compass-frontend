@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import LogoHeader from "@/components/LogoHeader";
 
 const Register = () => {
-  const { register, loading, errors } = useAuth();
+  const { register, loading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -97,7 +97,7 @@ const Register = () => {
             </button>
           </div>
 
-          {errors && <p className="text-red-500 text-sm">{errors}</p>}
+
 
           <Button
             type="submit"
