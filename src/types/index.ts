@@ -1,7 +1,18 @@
+import { ReactNode } from 'react';
+
+export interface SidebarLink {
+  key: string;
+  label: string;
+  path: string;
+  icon: ReactNode;
+}
+
+export type UserRole = 'student' | 'admin' | 'institution' | 'staff' | 'agent';
+
 export interface User {
-  id?: number;
+  id: string;
+  name: string;
   email: string;
-  password?: string;   // optional after login
-  token?: string;      // JWT
-  role?: string;       // student, agent, admin...
+  role: UserRole;
+  avatar?: string;
 }

@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       const [res] = await Promise.all([
         CallApi.post(backend_path.LOGIN, formData),
-        new Promise(resolve => setTimeout(resolve, 1000)) // Minimum 1s loading
+        new Promise(resolve => setTimeout(resolve, 1000))
       ]);
       const user: User = { email: formData.email, token: res.data.token, role: res.data.role };
       setAuthUser(user);
