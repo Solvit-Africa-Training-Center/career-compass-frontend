@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, ChevronDown, User, Settings, LogOut } from 'lucide-react';
+import { Search, Bell, ChevronDown, User, Settings, LogOut, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/hooks/useTheme';
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
@@ -12,22 +13,12 @@ const Header: React.FC<HeaderProps> = ({
   onNotificationClick
 }) => {
   const { authUser, logout } = useAuth();
-  
-  if (!authUser) return null;
-  
-  const user = {
-    id: '1',
-    name: authUser.email.split('@')[0] || 'User',
-    email: authUser.email,
-    role: authUser.role || 'Student', // fallback to 'Student'
-    avatar: undefined
-  };
-  const [searchQuery, setSearchQuery] = useState('');
+  const { isDark,toggleTheme } = useTheme();
+    const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [notificationCount] = useState(3); // You can make this dynamic
+  const [notificationCount] = useState(3);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown when clicking outside
+// Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -40,6 +31,12 @@ const Header: React.FC<HeaderProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+  if (!authUser) return null;
+  
+  const userName = authUser.name || authUser.email.split('@')[0] || 'User';
+    console.log(authUser.role);
+
+  
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,9 +49,10 @@ const Header: React.FC<HeaderProps> = ({
     setSearchQuery(e.target.value);
   };
 
-  const capitalizeRole = (role: string) => {
-    if (!role) return 'Student';
+  const capitalizeRole = (role: string | undefined) => {
+    if (!role) return 'Role';
     return role.charAt(0).toUpperCase() + role.slice(1);
+    
   };
 
   const getInitials = (name: string) => {
@@ -86,6 +84,7 @@ const Header: React.FC<HeaderProps> = ({
 
       {/* Right Section */}
       <div className="flex items-center space-x-4">
+        
         {/* Notifications */}
         <button
           onClick={onNotificationClick}
@@ -98,7 +97,13 @@ const Header: React.FC<HeaderProps> = ({
             </span>
           )}
         </button>
-
+        {/* Theme */}
+        <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-xl transition-colors ${isDark ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-200'}`}
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
         {/* User Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
@@ -107,23 +112,23 @@ const Header: React.FC<HeaderProps> = ({
           >
             {/* User Avatar */}
             <div className="w-8 h-8 rounded-full overflow-hidden bg-blue-500 flex items-center justify-center">
-              {user.avatar ? (
+              {authUser.avatar ? (
                 <img
-                  src={user.avatar}
-                  alt={user.name}
+                  src={authUser.avatar}
+                  alt={userName}
                   className="w-full h-full object-cover"
                 />
               ) : (
                 <span className="text-white text-sm font-medium">
-                  {getInitials(user.name)}
+                  {getInitials(userName)}
                 </span>
               )}
             </div>
             
             {/* User Info */}
             <div className="text-left">
-              <p className="text-sm font-medium text-gray-900">{user.name}</p>
-              <p className="text-xs text-gray-500">{capitalizeRole(user.role)}</p>
+              <p className="text-sm font-medium text-gray-900">{userName}</p>
+              <p className="text-xs text-gray-500">{capitalizeRole(authUser?.role)}</p>
             </div>
             
             {/* Dropdown Arrow */}
@@ -134,8 +139,8 @@ const Header: React.FC<HeaderProps> = ({
           {isDropdownOpen && (
             <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
               <div className="px-4 py-2 border-b border-gray-100">
-                <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                <p className="text-xs text-gray-500">{user.email}</p>
+                <p className="text-sm font-medium text-gray-900">{userName}</p>
+                <p className="text-xs text-gray-500">{authUser.email}</p>
               </div>
               
               <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2">

@@ -48,16 +48,8 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole = 'student' }) => {
         <div className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col">
             {/* Logo Section */}
             <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                        <div className="w-6 h-6 bg-white rounded-sm flex items-center justify-center">
-                            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <h1 className="text-lg font-semibold text-blue-600">CAREER</h1>
-                        <h2 className="text-lg font-semibold text-blue-600">COMPASS</h2>
-                    </div>
+                <div className="flex items-center">
+                    <img src="logo.png" className='w-40 h-40 rounded-full flex items-center justify-center'/>
                 </div>
             </div>
 

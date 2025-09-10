@@ -10,9 +10,10 @@ export interface SidebarLink {
 export type UserRole = 'student' | 'admin' | 'institution' | 'staff' | 'agent';
 
 export interface User {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
   email: string;
-  role: UserRole;
+  role: string;
+  token: string;
   avatar?: string;
 }

@@ -141,7 +141,4 @@ useEffect((): void => {
     </AuthContext.Provider>
   );
 };
-
 export default AuthContext;
-
-
