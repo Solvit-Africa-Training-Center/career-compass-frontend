@@ -4,7 +4,8 @@ import ForgotPassword from '@/components/ForgotPassword';
 import Home from '@/pages/Home';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
-import React from 'react';
+import ProgramDetails from '@/components/program-details';
+
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 const AppRoute = () => {
@@ -24,6 +25,7 @@ const AppRoute = () => {
         <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password" element={<ForgotPassword />} />
+        <Route path="/program-details" element={<ProgramDetails />} />
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
       </Routes>
     </>
