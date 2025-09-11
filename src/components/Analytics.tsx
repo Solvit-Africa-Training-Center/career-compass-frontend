@@ -1,7 +1,7 @@
 import React from 'react';
 import StatCard from '@/components/cards/StatCard';
 import DeadlineCard from './DeadlineCard';
-import { AnalyticsProps, StatCardData, DeadlineItem } from '@/types/';
+import type { AnalyticsProps, StatCardData, DeadlineItem } from '@/types/';
 import { useTheme } from '@/hooks/useTheme';
 
 // Default data for the first dashboard
@@ -107,9 +107,9 @@ const Analytics: React.FC<AnalyticsProps> = ({
             <div className={`p-6 rounded-xl shadow-sm border ${
               isDark ? 'bg-primarycolor-900 border-gray-700' : 'bg-white border-gray-100'
             }`}>
-              <div className="flex flex-col mb-4">
+              <div className="flex flex-col mb-4 text-center">
                 <h2 className={`text-lg font-semibold ${
-                  isDark ? 'text-white' : 'text-gray-900'
+                  isDark ? 'text-secondarycolor-300' : 'text-secondarycolor-300'
                 }`}>Upcoming Deadlines</h2>
                 <p className={`text-sm ${
                   isDark ? 'text-gray-400' : 'text-gray-500'

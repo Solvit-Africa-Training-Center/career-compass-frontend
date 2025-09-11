@@ -1,5 +1,5 @@
 import React from 'react';
-import { DeadlineItem } from '@/types';
+import type { DeadlineItem } from '@/types';
 import { useTheme } from '@/hooks/useTheme';
 
 interface DeadlineCardProps {
