@@ -84,7 +84,7 @@ const EmailVerification = () => {
           {otp.map((digit, index) => (
             <Input
               key={index}
-              ref={(el) => (inputRefs.current[index] = el)}
+              ref={(el) => { inputRefs.current[index] = el; }}
               type="text"
               value={digit}
               onChange={(e) => handleChange(index, e.target.value)}

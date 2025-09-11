@@ -1,11 +1,10 @@
-import React from 'react';
 import { Button } from './ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 
 const Welcome = () => {
   const navigate = useNavigate()
-  const { isDark,toggleTheme } = useTheme();
+  const { isDark } = useTheme();
   return (
     <div className={`py-8 md:py-16 px-4 transition-colors ${isDark ? 'bg-primarycolor-900' : 'bg-white'}`}>
       <div className="max-w-6xl mx-auto">

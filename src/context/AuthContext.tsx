@@ -1,4 +1,5 @@
-import { createContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useState, useEffect } from "react";
+import type { ReactNode } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import type { User } from "@/types";
@@ -38,8 +39,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (res.status === 201) {
         navigate("/email-verification");
       }
-    } catch (err: any) {
-      setErrors(err.message || "Registration failed");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErrors(error.message);
+      } else {
+        setErrors("Registration failed");
+      }
     } finally {
       setLoading(false);
     }
@@ -55,8 +60,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAuthUser(user);
       sessionStorage.setItem("user", JSON.stringify(user));
       navigate("/dashboard");
-    } catch (err: any) {
-      setErrors(err.message || "Login failed");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrors(err.message);
+      } else {
+        setErrors("Login failed");
+      }
     } finally {
       setLoading(false);
     }

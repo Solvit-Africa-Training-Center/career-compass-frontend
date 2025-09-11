@@ -25,10 +25,6 @@ const handleChange=(
 const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    //   alert("Passwords do not match");
-    //   return;
-    // }
-    // API call can go here later
     console.log("Login form:", { ...form, rememberMe });
   };
   return (

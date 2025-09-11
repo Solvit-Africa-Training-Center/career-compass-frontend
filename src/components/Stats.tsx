@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 
 const AnimatedCounter = ({ target, suffix = '' }: { target: number; suffix?: string }) => {

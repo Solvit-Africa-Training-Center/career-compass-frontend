@@ -1,5 +1,3 @@
-import React from 'react';
-
 const LogoHeader = () => {
   return (
     <div className='px-4 md:px-7 py-4 md:py-6'>

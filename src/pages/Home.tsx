@@ -1,8 +1,6 @@
 import ProgramAI from '@/components/cards/ProgramAI';
 import ProgramSection from '@/components/cards/ProgramCard';
 import Footer from '@/components/Footer';
-// import ProgramSection from '@/cards/programCard';
-// import ProgramCard from '@/components/cards/programCard';
 import NavBar from '@/components/NavBar';
 import Stats from '@/components/Stats';
 import Testimony from '@/components/Testimony';
