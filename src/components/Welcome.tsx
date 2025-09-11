@@ -32,7 +32,7 @@ const Welcome = () => {
               <div className={`p-4 md:p-6 rounded-2xl shadow-2xl transform rotate-1 lg:rotate-2 transition-colors ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
                 <div className={`rounded-xl overflow-hidden transition-colors ${isDark ? 'bg-gradient-to-br from-gray-700 to-gray-600' : 'bg-gradient-to-br from-blue-100 to-purple-100'}`}>
                   <img 
-                    src="./src/assets/welcome1.jpg"
+                    src="welcome1.jpg"
                     alt="Students collaborating on education journey"
                     className="w-full h-48 md:h-64 lg:h-auto object-cover rounded-lg"
                   />

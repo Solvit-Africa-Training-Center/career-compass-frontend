@@ -8,31 +8,31 @@ const Testimony = () => {
     {
       name: "Ineza Mark",
       role: "Biology student",
-      avatar: "./src/assets/welcome1.jpg",
+      avatar: "welcome1.jpg",
       text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry'standard Lorem Ipsum has been the industry'standard."
     },
     {
       name: "Uwase Monique", 
       role: "Student",
-      avatar: "./src/assets/welcome1.jpg",
+      avatar: "welcome1.jpg",
       text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry'standard Lorem Ipsum has been the industry'standard."
     },
     {
       name: "Abdul Aziz",
       role: "Agent", 
-      avatar: "./src/assets/welcome1.jpg",
+      avatar: "welcome1.jpg",
       text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry'standard Lorem Ipsum has been the industry'standard."
     },
     {
       name: "Sarah Johnson",
       role: "Student",
-      avatar: "./src/assets/welcome1.jpg", 
+      avatar: "welcome1.jpg", 
       text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry'standard Lorem Ipsum has been the industry'standard."
     },
     {
       name: "Mike Chen",
       role: "Student",
-      avatar: "./src/assets/welcome1.jpg",
+      avatar: "welcome1.jpg",
       text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry'standard Lorem Ipsum has been the industry'standard."
     }
   ];
