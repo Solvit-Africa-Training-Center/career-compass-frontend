@@ -16,6 +16,7 @@
       "@ui/*": ["./src/components/ui/*"],
       "@cards/*": ["./src/components/cards/*"],
       "@pages/*":["./src/pages/*"],
+      "@types/*":["./src/types/*"]
     }
   }
 }
