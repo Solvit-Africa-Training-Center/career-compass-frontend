@@ -26,7 +26,7 @@ const App: React.FC = () => {
     },
     {
       id: '2',
-      title: 'Data Science',
+      title: 'Data Sciences',
       university: 'Stanford University',
       location: 'Stanford, USA',
       deadline: '15 Oct, 2026',
