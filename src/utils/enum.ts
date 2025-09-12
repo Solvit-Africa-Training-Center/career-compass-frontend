@@ -13,6 +13,19 @@ export const backend_path={
     LOGOUT:'api/auth/logout/',
     REFRESH_TOKEN:'api/auth/token/refresh/',
 
+    // ROLES
+    // http://127.0.0.1:8000/api/auth/assign-role/
+    ASSIGN_ROLE: 'api/auth/assign-role/',
+    REMOVE_ROLE: 'api/auth/remove-role/',
+    ROLE_LIST:'api/auth/roles/',
+    CREATE_ROLE:'api/auth/roles/',
+    GET_ROLE_ID:'api/auth/roles/',
+    UPDATE_ROLE:'api/auth/roles/',
+    DELETE_ROLE:'api/auth/roles/',
+
+
+
+
     // PROFILE
     GET_USER_PROFILE:'api/auth/profiles/',
     ADD_USER_PROFILE:'api/auth/profiles/',

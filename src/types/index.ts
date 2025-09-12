@@ -13,7 +13,7 @@ export interface User {
   id?: string;
   name?: string;
   email: string;
-  role: string;
+  role: string[];
   token: string;
   avatar?: string;
 }

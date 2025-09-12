@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { X } from 'lucide-react';
+import { X, Menu } from 'lucide-react';
 import { 
     STUDENT_SIDEBAR_LINKS,
     ADMIN_SIDEBAR_LINKS,
@@ -10,16 +10,17 @@ import {
     SIDEBAR_BOTTOM_LINKS
 } from './constants/Navigations';
 
-import { SidebarLink, UserRole } from '@/types';
+import type { SidebarLink, UserRole } from '@/types';
 import { useTheme } from '@/hooks/useTheme';
 
 interface SidebarProps {
   userRole?: UserRole;
   isOpen?: boolean;
   onClose?: () => void;
+  onOpen?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ userRole = 'student', isOpen = true, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ userRole = 'student', isOpen = true, onClose, onOpen }) => {
     const location = useLocation();
     const { isDark } = useTheme();
 
@@ -59,32 +60,47 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole = 'student', isOpen = true, 
             )}
             
             {/* Sidebar */}
-            <div className={`fixed lg:static inset-y-0 left-0 z-50 ${isOpen ? 'w-64 sm:w-60 md:w-64' : 'lg:w-16'} h-screen ${isDark ? 'bg-primarycolor-900 border-gray-700' : 'bg-white border-gray-200'} border-r flex flex-col transform transition-all duration-300 ease-in-out ${
+            <div className={`fixed lg:static inset-y-0 left-0 z-50 ${isOpen ? 'w-64 sm:w-60 md:w-64' : 'lg:w-20'} h-screen ${isDark ? 'bg-primarycolor-900 border-gray-700' : 'bg-white border-gray-200'} border-r flex flex-col transform transition-all duration-300 ease-in-out ${
                 isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
             }`}>
-                {/* Logo Section */}
-                <div className={`h-16 px-4 lg:px-6 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'} flex items-center justify-between`}>
-                    {isOpen ? (
-                        <img src="logo.png" className='w-[300px] h-[300px] sm:w-12 sm:h-12 lg:w-[140px] lg:h-[140px] rounded-full object-cover'/>
-    
-                        
-                    ) : (
-                        <div className="hidden lg:flex w-full justify-center">
-                            <div className="w-8 h-8 bg-primarycolor-600 rounded-lg flex items-center justify-center">
-                                <div className="space-y-1">
-                                    <div className="w-4 h-0.5 bg-white"></div>
-                                    <div className="w-4 h-0.5 bg-white"></div>
-                                    <div className="w-4 h-0.5 bg-white"></div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                {/* Logo & Hamburger Section */}
+                <div className={`h-20 px-4 lg:px-4 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'} flex items-center justify-between`}>
+                    {/* Logo always visible and larger */}
+                    <div className="flex items-center space-x-2">
+                        <img 
+                            src="logo.png" 
+                            className={`object-cover rounded-full transition-all duration-300 ${isOpen ? 'w-14 h-14' : 'w-12 h-12'}`} 
+                            alt="Logo"
+                        />
+                        {/* Hamburger icon for desktop when closed */}
+                        {!isOpen && (
+                            <button 
+                                onClick={onOpen}
+                                className="hidden lg:inline-flex ml-2 p-2 rounded-md hover:bg-gray-100"
+                                aria-label="Open sidebar"
+                            >
+                                <Menu className="w-7 h-7" />
+                            </button>
+                        )}
+                    </div>
+                    {/* Close icon for mobile */}
                     <button 
                         onClick={onClose}
-                        className={`lg:hidden p-2 rounded-md ${isDark ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-900'}`}
+                        className="lg:hidden p-2 rounded-md hover:bg-gray-100"
+                        aria-label="Close sidebar"
                     >
                         <X className="w-5 h-5" />
                     </button>
+                    {/* Collapse icon for desktop when open */}
+                    {isOpen && (
+                        <button
+                            onClick={onClose}
+                            className="hidden lg:inline-flex ml-2 p-2 rounded-md hover:bg-gray-100"
+                            aria-label="Collapse sidebar"
+                        >
+                            <Menu className="w-7 h-7" />
+                        </button>
+                    )}
                 </div>
 
             {/* Navigation Links */}

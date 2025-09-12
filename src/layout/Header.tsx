@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, Bell, ChevronDown, User, Settings, LogOut, Sun, Moon, Menu } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
@@ -51,11 +52,10 @@ const Header: React.FC<HeaderProps> = ({
     setSearchQuery(e.target.value);
   };
 
-  const capitalizeRole = (role: string | undefined) => {
-    if (!role) return 'Role';
-    return role.charAt(0).toUpperCase() + role.slice(1);
-    
-  };
+  const capitalizeRole = (roles: string[] | undefined) => {
+  if (!roles || roles.length === 0) return 'No Roles Assigned';
+  return roles.map(r => r.charAt(0).toUpperCase() + r.slice(1)).join(', ');
+};
 
   const getInitials = (name: string) => {
     return name
@@ -156,10 +156,12 @@ const Header: React.FC<HeaderProps> = ({
                 <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{authUser.email}</p>
               </div>
               
+              <Link to="/profile">
               <button className={`w-full px-4 py-2 text-left text-sm flex items-center space-x-2 ${isDark ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'}`}>
                 <User className="w-4 h-4" />
                 <span>Profile</span>
               </button>
+              </Link>
               
               <button className={`w-full px-4 py-2 text-left text-sm flex items-center space-x-2 ${isDark ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'}`}>
                 <Settings className="w-4 h-4" />

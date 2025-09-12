@@ -1,5 +1,5 @@
 // Helper function to get user-friendly error messages
-export const getErrorMessage = (error: any, action: 'login' | 'registration'): string => {
+export const getErrorMessage = (error: any, action: 'login' | 'registration'| "fetch_roles" | "get_roles" | "assign_role" | "remove_role"): string => {
   const status = error?.response?.status;
   const message = error?.response?.data?.message || error?.message;
   

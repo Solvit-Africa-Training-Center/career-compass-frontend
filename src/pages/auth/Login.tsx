@@ -6,6 +6,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import type { User } from "@/types";
 import  LogoHeader from "@/components/LogoHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
 const Login = () => {
 const {login,loading}=useAuth()
   const [formData, setFormData] = useState({
@@ -99,12 +100,12 @@ const handleSubmit = (e: React.FormEvent) => {
 
         <p className="mt-8 text-center text-gray-700 text-base">
           Don't have an account?{" "}
-          <a
-            href="/register"
+          <Link
+            to="/register"
             className="text-primarycolor-500 hover:text-primarycolor-600 font-medium transition-colors duration-300"
           >
             Create an Account
-          </a>
+          </Link>
         </p>
       </div>
     </div>
