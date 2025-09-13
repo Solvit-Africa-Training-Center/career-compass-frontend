@@ -13,7 +13,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const { isDark } = useTheme();
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
-    if (!authUser) return null;
+    if (!authUser){
+        return null
+    }
     
     return (
         <div className={`flex h-screen bg-gray-50 ${isDark ? 'bg-primarycolor-900 border-gray-700' : 'bg-white border-gray-100'}`}>

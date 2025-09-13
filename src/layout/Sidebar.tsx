@@ -10,23 +10,32 @@ import {
     SIDEBAR_BOTTOM_LINKS
 } from './constants/Navigations';
 
-import type { SidebarLink, UserRole } from '@/types';
+import type { SidebarLink} from '@/types';
 import { useTheme } from '@/hooks/useTheme';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SidebarProps {
-  userRole?: UserRole;
+  userRole?: { id: number; code: string; name: string; }[];
   isOpen?: boolean;
   onClose?: () => void;
   onOpen?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ userRole = 'student', isOpen = true, onClose, onOpen }) => {
+const Sidebar: React.FC<SidebarProps> = ({ userRole = ['student'], isOpen = true, onClose, onOpen }) => {
     const location = useLocation();
     const { isDark } = useTheme();
-
+    const {logout} = useAuth();
+    
+// Normalize userRole to a string code
+    let roleCode = 'student';
+    if (typeof userRole === 'string') {
+        roleCode = userRole;
+    } else if (Array.isArray(userRole) && userRole.length > 0) {
+        roleCode = typeof userRole[0] === 'string' ? userRole[0] : userRole[0].code;
+    }
     // Function to get sidebar links based on user role
-    const getSidebarLinks = (role: UserRole): SidebarLink[] => {
-        switch (role.toLowerCase() as UserRole) {
+    const getSidebarLinks = (role: string): SidebarLink[] => {
+        switch (role.toLowerCase()) {
             case 'student':
                 return STUDENT_SIDEBAR_LINKS;
             case 'admin':
@@ -42,23 +51,22 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole = 'student', isOpen = true, 
         }
     };
 
-    const sidebarLinks = getSidebarLinks(userRole);
+    const sidebarLinks = getSidebarLinks(roleCode);
     
     // Function to check if current path matches the link
     const isActive = (path: string): boolean => {
         return location.pathname === path;
     };
 
+    const handleLogout = () => {
+        if (window.confirm('Are you sure you want to logout?')) {
+            logout();
+        }
+    };
+
     return (
         <>
             {/* Mobile Overlay */}
-            {isOpen && (
-                <div 
-                    className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-                    onClick={onClose}
-                />
-            )}
-            
             {/* Sidebar */}
             <div className={`fixed lg:static inset-y-0 left-0 z-50 ${isOpen ? 'w-64 sm:w-60 md:w-64' : 'lg:w-20'} h-screen ${isDark ? 'bg-primarycolor-900 border-gray-700' : 'bg-white border-gray-200'} border-r flex flex-col transform transition-all duration-300 ease-in-out ${
                 isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
@@ -152,27 +160,48 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole = 'student', isOpen = true, 
             {/* Bottom Links */}
             <div className={`border-t ${isDark ? 'border-gray-700' : 'border-gray-200'} p-3 lg:p-4`}>
                 <nav className="space-y-1 lg:space-y-2">
-                    {SIDEBAR_BOTTOM_LINKS.map((link) => (
-                        <Link
-                            key={link.key}
-                            to={link.path}
-                            className={`flex items-center ${isOpen ? 'space-x-2 lg:space-x-3 px-3 lg:px-4' : 'lg:justify-center lg:px-2'} py-2 lg:py-3 rounded-lg transition-colors duration-200 text-sm lg:text-base ${
-                                link.key === 'logout' 
-                                    ? isDark ? 'text-red-400 hover:bg-red-900' : 'text-red-600 hover:bg-red-50'
-                                    : isDark ? 'text-primarycolor-400 hover:bg-primarycolor-800' : 'text-primarycolor-600 hover:bg-primarycolor-50'
-                            }`}
-                            title={!isOpen ? link.label : undefined}
-                        >
-                            <span className="flex-shrink-0">
-                                {link.icon}
-                            </span>
-                            {isOpen && (
-                                <span className="font-medium">
-                                    {link.label}
+                    {SIDEBAR_BOTTOM_LINKS.map((link) => {
+                        if (link.key === 'logout') {
+                            return (
+                                <button
+                                    key={link.key}
+                                    onClick={handleLogout}
+                                    className={`w-full flex items-center ${isOpen ? 'space-x-2 lg:space-x-3 px-3 lg:px-4' : 'lg:justify-center lg:px-2'} py-2 lg:py-3 rounded-lg transition-colors duration-200 text-sm lg:text-base ${
+                                        isDark ? 'text-red-400 hover:bg-red-900' : 'text-red-600 hover:bg-red-50'
+                                    }`}
+                                    title={!isOpen ? link.label : undefined}
+                                >
+                                    <span className="flex-shrink-0">
+                                        {link.icon}
+                                    </span>
+                                    {isOpen && (
+                                        <span className="font-medium">
+                                            {link.label}
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        }
+                        return (
+                            <Link
+                                key={link.key}
+                                to={link.path}
+                                className={`flex items-center ${isOpen ? 'space-x-2 lg:space-x-3 px-3 lg:px-4' : 'lg:justify-center lg:px-2'} py-2 lg:py-3 rounded-lg transition-colors duration-200 text-sm lg:text-base ${
+                                    isDark ? 'text-primarycolor-400 hover:bg-primarycolor-800' : 'text-primarycolor-600 hover:bg-primarycolor-50'
+                                }`}
+                                title={!isOpen ? link.label : undefined}
+                            >
+                                <span className="flex-shrink-0">
+                                    {link.icon}
                                 </span>
-                            )}
-                        </Link>
-                    ))}
+                                {isOpen && (
+                                    <span className="font-medium">
+                                        {link.label}
+                                    </span>
+                                )}
+                            </Link>
+                        );
+                    })}
                 </nav>
             </div>
             </div>

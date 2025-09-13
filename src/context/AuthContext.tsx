@@ -7,7 +7,7 @@ import CallApi from "@/utils/callApi";
 import { backend_path } from "@/utils/enum";
 import { getErrorMessage } from "@/utils/Helper";
 
-
+type RoleObj = { id: number; code: string; name: string };
 
 interface AuthContextType {
   authUser: User | null;
@@ -18,6 +18,9 @@ interface AuthContextType {
   resendOTP: (email: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
+  assignRole: (userId: number, roleIds: number[]) => Promise<void>;
+  removeRole: (userId: number, roleIds: number[]) => Promise<void>;
+  getRoles: (userId: number) => Promise<RoleObj[]>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -26,7 +29,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [authUser, setAuthUser] = useState<User | null>(null);
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [studentRole, setStudentRole] = useState<RoleObj | null>(null);
   const navigate = useNavigate();
+
+  // Fetch all roles and set student role on mount
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await CallApi.get(backend_path.ROLE_LIST);
+        const student = res.data.find(
+          (role: RoleObj) =>
+            role.code.toLowerCase() === "student" ||
+            role.name.toLowerCase() === "student"
+        );
+        if (student) {
+          setStudentRole(student);
+        }
+      } catch (err: any) {
+        toast.error(getErrorMessage(err, "fetch_roles"));
+      }
+    };
+    fetchRoles();
+  }, []);
 
   // Register
   const register = async (formData: { email: string; password: string; confirmPassword: string }) => {
@@ -36,21 +60,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     try {
       setLoading(true);
-      const [res] = await Promise.all([
-        CallApi.post(backend_path.REGISTER, {
-          email: formData.email,
-          password: formData.password,
-        }),
-        new Promise(resolve => setTimeout(resolve, 1000))
-      ]);
-      if (res.status === 201) {
+      const res = await CallApi.post(backend_path.REGISTER, {
+        email: formData.email,
+        password: formData.password,
+      });
+      if (res.status === 201 && res.data.user?.id && studentRole) {
         setRegisteredEmail(formData.email);
+        // Assign student role after registration
+        await CallApi.post(backend_path.ASSIGN_ROLE, {
+          user_id: res.data.user.id,
+          role_ids: [studentRole.id],
+        });
+        const user: User = {
+          id: res.data.user.id,
+          email: formData.email,
+          role: [studentRole],
+          accessToken: "",
+          refreshToken: "",
+        };
+        setAuthUser(user);
+        sessionStorage.setItem("user", JSON.stringify(user));
         toast.success("Registration successful! Please check your email for verification.");
         navigate("/email-verification");
+      } else {
+        toast.error("Registration failed. Please try again.");
       }
     } catch (err: any) {
-      const errorMessage = getErrorMessage(err, 'registration');
-      toast.error(errorMessage);
+      toast.error(getErrorMessage(err, "registration"));
     } finally {
       setLoading(false);
     }
@@ -60,18 +96,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (formData: { email: string; password: string }) => {
     try {
       setLoading(true);
-      const [res] = await Promise.all([
-        CallApi.post(backend_path.LOGIN, formData),
-        new Promise(resolve => setTimeout(resolve, 1000))
-      ]);
-      const user: User = { email: formData.email, token: res.data.token, role: res.data.role };
+      const res = await CallApi.post(backend_path.LOGIN, formData);
+      let roles: RoleObj[] = [];
+      if (res.data.user?.roles && Array.isArray(res.data.user.roles) && res.data.user.roles.length > 0) {
+        roles = res.data.user.roles;
+      } else if (studentRole) {
+        // Assign student role if not present
+        await CallApi.post(backend_path.ASSIGN_ROLE, {
+          user_id: res.data.user.id,
+          role_ids: [studentRole.id],
+        });
+        roles = [studentRole];
+      }
+      const user: User = {
+        id: res.data.user.id,
+        email: res.data.user.email,
+        role: roles,
+        accessToken: res.data.tokens.access,
+        refreshToken: res.data.tokens.refresh,
+      };
       setAuthUser(user);
       sessionStorage.setItem("user", JSON.stringify(user));
       toast.success("Login successful!");
       navigate("/dashboard");
     } catch (err: any) {
-      const errorMessage = getErrorMessage(err, 'login');
-      toast.error(errorMessage);
+      toast.error(getErrorMessage(err, "login"));
     } finally {
       setLoading(false);
     }
@@ -81,19 +130,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const verifyOTP = async (formData: { email: string; otp: string }) => {
     try {
       setLoading(true);
-      const [response] = await Promise.all([
-        CallApi.post(backend_path.VERIFY_EMAIL, formData),
-        new Promise(resolve => setTimeout(resolve, 1000))
-      ]);
-      
+      const response = await CallApi.post(backend_path.VERIFY_EMAIL, formData);
       if (response.status === 200) {
         toast.success("Email verified successfully!");
         navigate("/login");
       }
     } catch (error: any) {
-      const errorMessage = error?.response?.status === 400 
-        ? "Invalid or expired OTP. Please try again."
-        : "Verification failed. Please try again.";
+      const errorMessage =
+        error?.response?.status === 400
+          ? "Invalid or expired OTP. Please try again."
+          : "Verification failed. Please try again.";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -119,26 +165,89 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     sessionStorage.clear();
     navigate("/login");
   };
-useEffect((): void => {
-  const token: string | null = sessionStorage.getItem("token");
-  if (token) {
-    const decodeToken: { role: string[] } = jwtDecode(token);
-    const role: string[] = decodeToken.role;
-    if (role.includes("admin") || role.includes("student") || role.includes("agent") || role.includes("school")) {
-      setAuthUser({ email: sessionStorage.getItem("email") || "", token, role: role[0] });
+
+  // Get Roles for a user (from backend)
+  const getRoles = async (userId: number): Promise<RoleObj[]> => {
+    try {
+      setLoading(true);
+      const res = await CallApi.get(`${backend_path.GET_USER_ID}${userId}/`);
+      if (res.data?.roles && Array.isArray(res.data.roles)) {
+        return res.data.roles;
+      }
+      return [];
+    } catch (err: any) {
+      toast.error(getErrorMessage(err, "get_roles"));
+      return [];
+    } finally {
+      setLoading(false);
     }
-  }
-}, []);
-  // Restore session
+  };
+
+  // Assign Role
+  const assignRole = async (userId: number, roleIds: number[]) => {
+    try {
+      setLoading(true);
+      await CallApi.post(backend_path.ASSIGN_ROLE, { user_id: userId, role_ids: roleIds });
+      toast.success("Role assigned successfully!");
+      // Update roles for current user if needed
+      if (authUser && authUser.id === userId) {
+        const updatedRoles = await getRoles(userId);
+        setAuthUser((prev) => prev ? { ...prev, role: updatedRoles } : null);
+        sessionStorage.setItem("user", JSON.stringify({ ...authUser, role: updatedRoles }));
+      }
+    } catch (err: any) {
+      toast.error(getErrorMessage(err, "assign_role"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Remove Role
+  const removeRole = async (userId: number, roleIds: number[]) => {
+    try {
+      setLoading(true);
+      await CallApi.post(backend_path.REMOVE_ROLE, { user_id: userId, role_ids: roleIds });
+      toast.success("Role removed successfully!");
+      if (authUser && authUser.id === userId) {
+        const updatedRoles = await getRoles(userId);
+        setAuthUser((prev) => prev ? { ...prev, role: updatedRoles } : null);
+        sessionStorage.setItem("user", JSON.stringify({ ...authUser, role: updatedRoles }));
+      }
+    } catch (err: any) {
+      toast.error(getErrorMessage(err, "remove_role"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Session Restoration
   useEffect(() => {
-    const saved = sessionStorage.getItem("user");
-    if (saved) setAuthUser(JSON.parse(saved));
+    const savedUser = sessionStorage.getItem("user");
+    if (savedUser) {
+      const user: User = JSON.parse(savedUser);
+      setAuthUser(user);
+    }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ authUser, registeredEmail, register, login, verifyOTP, resendOTP, logout, loading }}>
+    <AuthContext.Provider
+      value={{
+        authUser,
+        registeredEmail,
+        register,
+        login,
+        verifyOTP,
+        resendOTP,
+        logout,
+        loading,
+        assignRole,
+        removeRole,
+        getRoles,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
+
 export default AuthContext;

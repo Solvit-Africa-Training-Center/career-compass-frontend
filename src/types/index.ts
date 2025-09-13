@@ -9,12 +9,21 @@ export interface SidebarLink {
 
 export type UserRole = 'student' | 'admin' | 'institution' | 'staff' | 'agent';
 
+// export interface User {
+//   id?: string;
+//   name?: string;
+//   email: string;
+//   role: string[];
+//   token: string;
+//   avatar?: string;
+// }
 export interface User {
-  id?: string;
+  id?: number; // Updated to match response
   name?: string;
   email: string;
-  role: string[];
-  token: string;
+  role: { id: number; code: string; name: string }[];
+  accessToken: string; // For tokens.access
+  refreshToken?: string; // Optional refresh token
   avatar?: string;
 }
 // Analytics

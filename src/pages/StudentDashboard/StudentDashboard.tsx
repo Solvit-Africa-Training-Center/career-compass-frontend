@@ -37,10 +37,12 @@ const mockApplications: Application[] = [
   },
 ];
 const StudentDashboard = () => {
+    const [currentPage, setCurrentPage] = useState(1)
   const { authUser } = useAuth();
   const { isDark } = useTheme();
-  if (!authUser) return null;
-  const [currentPage, setCurrentPage] = useState(1);
+  if (!authUser) {
+    return null;
+  }
   const totalPages = 3;
   const userName = authUser.email.split("@")[0] || "User";
 

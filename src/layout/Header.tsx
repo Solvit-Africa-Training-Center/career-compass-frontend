@@ -34,10 +34,12 @@ const Header: React.FC<HeaderProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-  if (!authUser) return null;
+  if (!authUser) {
+    return null;
+  }
   
   const userName = authUser.name || authUser.email.split('@')[0] || 'User';
-    console.log(authUser.role);
+    // console.log(authUser.role);
 
   
 
@@ -53,7 +55,9 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   const capitalizeRole = (roles: string[] | undefined) => {
-  if (!roles || roles.length === 0) return 'No Roles Assigned';
+  if (!roles || roles.length === 0){
+    return 'No Role Assigned';
+  }
   return roles.map(r => r.charAt(0).toUpperCase() + r.slice(1)).join(', ');
 };
 
