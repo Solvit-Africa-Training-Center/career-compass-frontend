@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (student) {
           setStudentRole(student);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         toast.error(getErrorMessage(err, "fetch_roles"));
       }
     };
@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         toast.error("Registration failed. Please try again.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast.error(getErrorMessage(err, "registration"));
     } finally {
       setLoading(false);
@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       sessionStorage.setItem("user", JSON.stringify(user));
       toast.success("Login successful!");
       navigate("/dashboard");
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast.error(getErrorMessage(err, "login"));
     } finally {
       setLoading(false);
@@ -135,7 +135,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         toast.success("Email verified successfully!");
         navigate("/login");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage =
         error?.response?.status === 400
           ? "Invalid or expired OTP. Please try again."
@@ -152,13 +152,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       await CallApi.post(backend_path.RESEND_OTP, { email });
       toast.success("OTP sent successfully!");
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error("Failed to resend OTP. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+
+  
   // Logout
   const logout = () => {
     setAuthUser(null);
@@ -175,7 +177,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return res.data.roles;
       }
       return [];
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast.error(getErrorMessage(err, "get_roles"));
       return [];
     } finally {
@@ -195,7 +197,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setAuthUser((prev) => prev ? { ...prev, role: updatedRoles } : null);
         sessionStorage.setItem("user", JSON.stringify({ ...authUser, role: updatedRoles }));
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast.error(getErrorMessage(err, "assign_role"));
     } finally {
       setLoading(false);
@@ -213,7 +215,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setAuthUser((prev) => prev ? { ...prev, role: updatedRoles } : null);
         sessionStorage.setItem("user", JSON.stringify({ ...authUser, role: updatedRoles }));
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast.error(getErrorMessage(err, "remove_role"));
     } finally {
       setLoading(false);

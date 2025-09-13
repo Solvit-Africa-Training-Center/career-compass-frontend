@@ -78,7 +78,8 @@ const handleSubmit = (e: React.FormEvent) => {
               />
               <label htmlFor="remember-me" className="cursor-pointer">Remember me </label>
             </div>
-            <a href="/reset-password" className="text-primarycolor-500 hover:text-primarycolor-600 transition-colors">Forgot Password?</a>
+            <Link
+             to="/reset-password" className="text-primarycolor-500 hover:text-primarycolor-600 transition-colors">Forgot Password?</Link>
           </div>
 
 

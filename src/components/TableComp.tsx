@@ -114,7 +114,9 @@ export function ApplicationTable({
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  if (currentPage < totalPages) onPageChange(currentPage + 1);
+                  if (currentPage < totalPages){
+                     onPageChange(currentPage + 1);
+                  }
                 }}
                 className={
                   currentPage === totalPages

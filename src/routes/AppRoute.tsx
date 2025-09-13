@@ -9,11 +9,12 @@ import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import { useAuth } from "@/hooks/useAuth";
 import { Route, Routes } from "react-router-dom";
-import Analytics, { ProgramsDashboardAnalytics } from "@/components/Analytics";
+import Analytics from "@/components/Analytics";
 import ProgramsList from "@/components/ProgramsList";
+import ProgramDetails from "@/components/program-details";
 
 const AppRoute: React.FC = () => {
-  const { authUser, logout } = useAuth();
+  const { authUser } = useAuth();
   const isAuthenticated = !!authUser;
 
   return (
@@ -42,6 +43,14 @@ const AppRoute: React.FC = () => {
               element={
                 <Layout>
                   <ProgramsList />
+                </Layout>
+              }
+            />
+            <Route
+              path="/program-details/:id"
+              element={
+                <Layout>
+                  <ProgramDetails />
                 </Layout>
               }
             />

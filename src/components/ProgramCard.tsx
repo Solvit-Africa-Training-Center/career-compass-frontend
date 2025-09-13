@@ -1,6 +1,7 @@
 import React from 'react';
 import { MapPin, Users, Calendar, Clock } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
+import { useNavigate } from 'react-router-dom';
 
 interface Program {
   id: string;
@@ -21,9 +22,12 @@ interface ProgramCardProps {
 
 const ProgramCard: React.FC<ProgramCardProps> = ({ program, onApply }) => {
   const { isDark } = useTheme();
+  const navigate = useNavigate();
   
   const getStatusColor = () => {
-    if (program.status === 'Closed') return 'bg-red-500';
+    if (program.status === 'Closed') {
+      return 'bg-red-500';
+    }
     return program.isUrgent ? 'bg-orange-500' : 'bg-green-500';
   };
 
@@ -89,11 +93,14 @@ const ProgramCard: React.FC<ProgramCardProps> = ({ program, onApply }) => {
         >
           Apply Now
         </button>
-        <button className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
-          isDark 
-            ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
-            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-        }`}>
+        <button 
+          onClick={() => navigate(`/program-details/${program.id}`)}
+          className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+            isDark 
+              ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
+              : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+          }`}
+        >
           Learn More
         </button>
       </div>
