@@ -10,6 +10,7 @@ import Register from "@/pages/auth/Register";
 import { useAuth } from "@/hooks/useAuth";
 import { Route, Routes } from "react-router-dom";
 import Analytics, { ProgramsDashboardAnalytics } from "@/components/Analytics";
+import ProgramsList from "@/components/ProgramsList";
 
 const AppRoute: React.FC = () => {
   const { authUser, logout } = useAuth();
@@ -40,15 +41,7 @@ const AppRoute: React.FC = () => {
               path="/programs"
               element={
                 <Layout>
-                  <div className="space-y-6">
-                    <h1 className="text-2xl font-bold text-gray-900">
-                      Programs
-                    </h1>
-                    <div className="bg-white p-6 rounded-lg shadow">
-                      <p>Browse available programs</p>
-                      <ProgramsDashboardAnalytics />
-                    </div>
-                  </div>
+                  <ProgramsList />
                 </Layout>
               }
             />

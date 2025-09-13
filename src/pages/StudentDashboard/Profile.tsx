@@ -29,7 +29,7 @@ interface FormData {
 //           <input
 //             type="text"
 //             placeholder="Search..."
-//             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+//             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
 //           />
 //         </div>
 //         <div className="flex items-center space-x-4">
@@ -40,7 +40,7 @@ interface FormData {
 //           </button>
 //           <div className="relative">
 //             <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
-//               <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+//               <div className="w-8 h-8 bg-primarycolor-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
 //                 U
 //               </div>
 //               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +82,7 @@ const ProfileForm: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <button className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white hover:bg-blue-600">
+          <button className="absolute -bottom-1 -right-1 w-8 h-8 bg-primarycolor-500 rounded-full flex items-center justify-center text-white hover:bg-primarycolor-600">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
@@ -99,7 +99,7 @@ const ProfileForm: React.FC = () => {
             name="firstName"
             value={formData.firstName}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
           />
         </div>
         <div>
@@ -109,7 +109,7 @@ const ProfileForm: React.FC = () => {
             name="lastName"
             value={formData.lastName}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
           />
         </div>
         <div>
@@ -119,7 +119,7 @@ const ProfileForm: React.FC = () => {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
           />
         </div>
         <div>
@@ -129,7 +129,7 @@ const ProfileForm: React.FC = () => {
             name="age"
             value={formData.age}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
           />
         </div>
         <div>
@@ -139,7 +139,7 @@ const ProfileForm: React.FC = () => {
             name="dateOfBirth"
             value={formData.dateOfBirth}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
           />
         </div>
         <div>
@@ -148,7 +148,7 @@ const ProfileForm: React.FC = () => {
             name="language"
             value={formData.language}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
           >
             <option value="">Select Language</option>
             <option value="english">English</option>
@@ -162,7 +162,7 @@ const ProfileForm: React.FC = () => {
             name="country"
             value={formData.country}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
           >
             <option value="">Select Country</option>
             <option value="us">United States</option>
@@ -176,7 +176,7 @@ const ProfileForm: React.FC = () => {
             name="city"
             value={formData.city}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
           >
             <option value="">Select City</option>
             <option value="nyc">New York</option>
@@ -196,7 +196,7 @@ const ProfileForm: React.FC = () => {
               value="male"
               checked={formData.gender === 'male'}
               onChange={handleInputChange}
-              className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+              className="w-4 h-4 text-primarycolor-600 focus:ring-primarycolor-500"
             />
             <span className="ml-2 text-sm text-gray-700">Male</span>
           </label>
@@ -207,7 +207,7 @@ const ProfileForm: React.FC = () => {
               value="female"
               checked={formData.gender === 'female'}
               onChange={handleInputChange}
-              className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+              className="w-4 h-4 text-primarycolor-600 focus:ring-primarycolor-500"
             />
             <span className="ml-2 text-sm text-gray-700">Female</span>
           </label>
@@ -220,7 +220,7 @@ const ProfileForm: React.FC = () => {
           Back to Dashboard
         </button>
         </Link>
-        <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500">
+        <button className="px-6 py-2 bg-primarycolor-600 text-white rounded-lg hover:bg-primarycolor-700 focus:ring-2 focus:ring-primarycolor-500">
           Save Changes
         </button>
       </div>
