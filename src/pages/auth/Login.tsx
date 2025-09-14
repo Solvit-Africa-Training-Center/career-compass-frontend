@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/checkbox"
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import type { User } from "@/types";
+
 import  LogoHeader from "@/components/LogoHeader";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
@@ -17,7 +17,7 @@ const {login,loading}=useAuth()
   const [rememberMe, setRememberMe] = useState(false)
 const handleChange=(
   e: React.ChangeEvent<HTMLInputElement>,
-  field: keyof User
+  field: "email" | "password"
 ) => {
   const { value } = e.target;
   setFormData((prev) => ({ ...prev, [field]: value }));

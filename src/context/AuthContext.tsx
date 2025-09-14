@@ -1,8 +1,9 @@
-import { createContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useState, useEffect, type ReactNode } from "react";
+import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import type { User } from "@/types";
+import type { User,Profile } from "@/types";
 import CallApi from "@/utils/callApi";
 import { backend_path } from "@/utils/enum";
 import { getErrorMessage } from "@/utils/Helper";
@@ -18,6 +19,8 @@ interface AuthContextType {
   resendOTP: (email: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
+  fetchProfile: () => Promise<void>;
+  updateProfile: (data: Partial<Profile>) => Promise<void>;
   assignRole: (userId: number, roleIds: number[]) => Promise<void>;
   removeRole: (userId: number, roleIds: number[]) => Promise<void>;
   getRoles: (userId: number) => Promise<RoleObj[]>;
@@ -28,6 +31,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [authUser, setAuthUser] = useState<User | null>(null);
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
+    const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(false);
   const [studentRole, setStudentRole] = useState<RoleObj | null>(null);
   const navigate = useNavigate();
@@ -113,10 +117,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email: res.data.user.email,
         role: roles,
         accessToken: res.data.tokens.access,
-        refreshToken: res.data.tokens.refresh,
+        // refreshToken: res.data.tokens.refresh,
       };
       setAuthUser(user);
-      sessionStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(user));
+          localStorage.setItem("accessToken", res.data.tokens.access);
+       Cookies.set("accessToken", res.data.tokens.access);
       toast.success("Login successful!");
       navigate("/dashboard");
     } catch (err: unknown) {
@@ -136,15 +142,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         navigate("/login");
       }
     } catch (error: unknown) {
-      const errorMessage =
-        error?.response?.status === 400
-          ? "Invalid or expired OTP. Please try again."
-          : "Verification failed. Please try again.";
-      toast.error(errorMessage);
+      toast.error(getErrorMessage(error, "verify_otp"));
     } finally {
       setLoading(false);
     }
   };
+
 
   // Resend OTP
   const resendOTP = async (email: string) => {
@@ -153,18 +156,61 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await CallApi.post(backend_path.RESEND_OTP, { email });
       toast.success("OTP sent successfully!");
     } catch (error: unknown) {
-      toast.error("Failed to resend OTP. Please try again.");
+      toast.error(getErrorMessage(error, "resend_otp"));
     } finally {
       setLoading(false);
     }
   };
 
+  // Fetch profile for the signed-in user
+  const fetchProfile = async () => {
+    if (!authUser) {
+      return;
+    }
+    try {
+      setLoading(true);
+      const res = await CallApi.get(`${backend_path.GET_USER_PROFILE}${authUser.id}/`,{
+        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+      });
+      setProfile(res.data);
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "fetch_profile"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
+// Update profile
+  const updateProfile = async (data: Partial<Profile>) => {
+    if (!authUser) {
+      return;
+    }
+    try {
+      setLoading(true);
+      const res = await CallApi.put(`${backend_path.UPDATE_PROFILE}${authUser.id}/`, data);
+      setProfile(res.data);
+      toast.success("Profile updated successfully!");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "update_profile"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+// Fetch profile when user logs in
+  useEffect(() => {
+    if (authUser) {
+      fetchProfile();
+    }
+  }, [authUser]);
   
   // Logout
   const logout = () => {
     setAuthUser(null);
-    sessionStorage.clear();
+    localStorage.clear();
+    
+    Cookies.remove("accessToken");
+    toast.success("Logged out successfully!");
     navigate("/login");
   };
 
@@ -222,9 +268,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Session Restoration
+  // Storage Restoration
   useEffect(() => {
-    const savedUser = sessionStorage.getItem("user");
+    const savedUser = localStorage.getItem("user");
     if (savedUser) {
       const user: User = JSON.parse(savedUser);
       setAuthUser(user);
@@ -242,6 +288,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         resendOTP,
         logout,
         loading,
+        fetchProfile,
+        updateProfile,
         assignRole,
         removeRole,
         getRoles,
