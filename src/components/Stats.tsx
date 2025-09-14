@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 
 const AnimatedCounter = ({ target, suffix = '' }: { target: number; suffix?: string }) => {
   const [count, setCount] = useState(0);
@@ -25,8 +26,9 @@ const AnimatedCounter = ({ target, suffix = '' }: { target: number; suffix?: str
 };
 
 const Stats = () => {
+  const { isDark } = useTheme();
   return (
-    <div className='bg-primarycolor-800 py-8 px-4'>
+    <div className={`py-8 px-4 transition-colors ${isDark ? 'bg-primarycolor-800' : 'bg-primarycolor-800'}`}>
             <div className='max-w-6xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8'>
                 <div className='text-center space-y-2'>
                     <h1 className='text-secondarycolor-300 text-2xl md:text-3xl font-bold'>

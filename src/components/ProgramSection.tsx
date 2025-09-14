@@ -1,8 +1,7 @@
 import React from 'react';
 import { ArrowRight, GraduationCap } from 'lucide-react';
-import { Button } from '../ui/Button';
+import { Button } from './ui/Button';
 import { useTheme } from '@/hooks/useTheme';
-// import { Button } from '@/ui/Button';
 
 interface ProgramCardProps {
   title: string;
@@ -19,7 +18,6 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
   cardColor,
   buttonStyle,
 }) => {
-  const {isDark}=useTheme()
   return (
     <div
       className={`rounded-xl shadow-md p-8 text-center flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${cardColor}`}

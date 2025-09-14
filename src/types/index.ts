@@ -1,17 +1,18 @@
-export interface Program {
-  id: string;
-  title: string;
-  university: string;
-  location: string;
-  deadline: string;
-  seats: number;
-  timeRemaining: string;
-  status: 'Open' | 'Closed';
+import type{ ReactNode } from 'react';
+
+export interface SidebarLink {
+  key: string;
+  label: string;
+  path: string;
+  icon: ReactNode;
 }
 
-export interface SummaryCard {
-  title: string;
-  count: number;
-  growth?: string;
-  color: 'orange' | 'green' | 'red';
+export type UserRole = 'student' | 'admin' | 'institution' | 'staff' | 'agent';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  avatar?: string;
 }
