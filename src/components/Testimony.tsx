@@ -1,5 +1,5 @@
 import { useTheme } from '@/hooks/useTheme';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const Testimony = () => {
   const [currentIndex, setCurrentIndex] = useState(0);

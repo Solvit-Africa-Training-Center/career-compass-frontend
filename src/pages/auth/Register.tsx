@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import LogoHeader from "@/components/LogoHeader";
+import { Link } from "react-router-dom";
 
 const Register = () => {
   const { register, loading } = useAuth();
@@ -104,18 +105,22 @@ const Register = () => {
             disabled={loading}
             className="w-full h-12 mt-8 bg-primarycolor-500 hover:bg-primarycolor-600 text-white font-semibold text-base rounded-md transition-colors duration-300"
           >
-            {loading ? "Creating account..." : "Create an account"}
+            {loading ? (<>
+            <Loader2 className="mr-2 h-12 w-12 animate-spin" />
+            </>):(
+              "Create an account"
+            )}
           </Button>
         </form>
 
         <p className="mt-8 text-center text-gray-700 text-base">
           Already have an account?{" "}
-          <a
-            href="/login"
+          <Link
+            to="/login"
             className="text-primarycolor-500 hover:text-primarycolor-600 font-medium transition-colors duration-300"
           >
             Sign In
-          </a>
+          </Link>
         </p>
       </div>
     </div>

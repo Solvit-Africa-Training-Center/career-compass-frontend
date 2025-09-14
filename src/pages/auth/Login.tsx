@@ -3,9 +3,10 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/checkbox"
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import type { User } from "@/types";
+
 import  LogoHeader from "@/components/LogoHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
 const Login = () => {
 const {login,loading}=useAuth()
   const [formData, setFormData] = useState({
@@ -16,7 +17,7 @@ const {login,loading}=useAuth()
   const [rememberMe, setRememberMe] = useState(false)
 const handleChange=(
   e: React.ChangeEvent<HTMLInputElement>,
-  field: keyof User
+  field: "email" | "password"
 ) => {
   const { value } = e.target;
   setFormData((prev) => ({ ...prev, [field]: value }));
@@ -77,7 +78,8 @@ const handleSubmit = (e: React.FormEvent) => {
               />
               <label htmlFor="remember-me" className="cursor-pointer">Remember me </label>
             </div>
-            <a href="/reset-password" className="text-primarycolor-500 hover:text-primarycolor-600 transition-colors">Forgot Password?</a>
+            <Link
+             to="/reset-password" className="text-primarycolor-500 hover:text-primarycolor-600 transition-colors">Forgot Password?</Link>
           </div>
 
 
@@ -99,12 +101,12 @@ const handleSubmit = (e: React.FormEvent) => {
 
         <p className="mt-8 text-center text-gray-700 text-base">
           Don't have an account?{" "}
-          <a
-            href="/register"
+          <Link
+            to="/register"
             className="text-primarycolor-500 hover:text-primarycolor-600 font-medium transition-colors duration-300"
           >
             Create an Account
-          </a>
+          </Link>
         </p>
       </div>
     </div>
