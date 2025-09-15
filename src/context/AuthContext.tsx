@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import type { User,Profile } from "@/types";
+import type { User,Profile, ProfileFormData } from "@/types";
 import CallApi from "@/utils/callApi";
 import { backend_path } from "@/utils/enum";
 import { getErrorMessage } from "@/utils/Helper";
@@ -19,11 +19,13 @@ interface AuthContextType {
   resendOTP: (email: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
-  fetchProfile: () => Promise<void>;
+  fetchProfile: () => Promise<Profile | null>;
+  createProfile: (data: ProfileFormData) => Promise<void>;
   updateProfile: (data: Partial<Profile>) => Promise<void>;
   assignRole: (userId: number, roleIds: number[]) => Promise<void>;
   removeRole: (userId: number, roleIds: number[]) => Promise<void>;
   getRoles: (userId: number) => Promise<RoleObj[]>;
+  profile: Profile | null;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -100,6 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (formData: { email: string; password: string }) => {
     try {
       setLoading(true);
+      console.log('Login request data:', formData); // Log request data
       const res = await CallApi.post(backend_path.LOGIN, formData);
       let roles: RoleObj[] = [];
       if (res.data.user?.roles && Array.isArray(res.data.user.roles) && res.data.user.roles.length > 0) {
@@ -124,13 +127,55 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           localStorage.setItem("accessToken", res.data.tokens.access);
        Cookies.set("accessToken", res.data.tokens.access);
       toast.success("Login successful!");
-      navigate("/dashboard");
+      // Navigate based on user role
+      const isAdmin = user.role?.some(r => r.code?.toLowerCase() === 'admin');
+      navigate(isAdmin ? "/admin" : "/dashboard");
     } catch (err: unknown) {
-      toast.error(getErrorMessage(err, "login"));
+      console.error('Login error:', err);
+      // Log detailed error response
+      if (err && typeof err === 'object' && 'response' in err) {
+        const response = (err as any).response;
+        console.error('Error details:', {
+          status: response?.status,
+          statusText: response?.statusText,
+          data: response?.data,
+          headers: response?.headers
+        });
+        // Show the specific error message from the backend if available
+        if (response?.data?.non_field_errors) {
+          toast.error(response.data.non_field_errors[0]);
+        } else {
+          toast.error(getErrorMessage(err, "login"));
+        }
+      } else {
+        toast.error(getErrorMessage(err, "login"));
+      }
     } finally {
       setLoading(false);
     }
   };
+  // const login = async (formData: { email: string; password: string }) => {
+  //   try {
+  //     setLoading(true);
+  //     const [res] = await Promise.all([
+  //       CallApi.post(backend_path.LOGIN, formData),
+  //       new Promise(resolve => setTimeout(resolve, 1000))
+  //     ]);
+  //     const user: User = { email: formData.email, token: res.data.token, role: res.data.role };
+  //     setAuthUser(user);
+  //     sessionStorage.setItem("user", JSON.stringify(user));
+  //     toast.success("Login successful!");
+      
+  //     // Navigate based on user role
+  //     const isAdmin = user.role?.some(r => r.code.toLowerCase() === 'admin');
+  //     navigate(isAdmin ? "/admin" : "/dashboard");
+  //   } catch (err: any) {
+  //     const errorMessage = getErrorMessage(err, 'login');
+  //     toast.error(errorMessage);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
 
   // Verify OTP
   const verifyOTP = async (formData: { email: string; otp: string }) => {
@@ -165,21 +210,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Fetch profile for the signed-in user
   const fetchProfile = async () => {
     if (!authUser) {
-      return;
+      return null;
     }
     try {
       setLoading(true);
-      const res = await CallApi.get(`${backend_path.GET_USER_PROFILE}${authUser.id}/`,{
+      const res = await CallApi.get(`${backend_path.GET_USER_PROFILE}${authUser.id}/`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
       });
       setProfile(res.data);
+      return res.data;
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, "fetch_profile"));
+      return null;
     } finally {
       setLoading(false);
     }
   };
-
+//create profile
+  const createProfile = async (data: ProfileFormData) => {
+    if (!authUser) {
+      return;
+    }
+    try {
+      setLoading(true);
+      const res = await CallApi.post(backend_path.ADD_USER_PROFILE, data);
+      setProfile(res.data);
+      toast.success("Profile created successfully!");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "create_profile"));
+    } finally {
+      setLoading(false);
+    }
+  }
 // Update profile
   const updateProfile = async (data: Partial<Profile>) => {
     if (!authUser) {
@@ -289,10 +351,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
         loading,
         fetchProfile,
+        createProfile,
         updateProfile,
         assignRole,
         removeRole,
         getRoles,
+        profile
       }}
     >
       {children}

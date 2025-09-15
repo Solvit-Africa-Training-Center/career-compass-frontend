@@ -12,6 +12,9 @@ import { Route, Routes } from "react-router-dom";
 import Analytics from "@/components/Analytics";
 import ProgramsList from "@/components/ProgramsList";
 import ProgramDetails from "@/components/program-details";
+import AdminDashboard from "@/pages/AdminDashboard/AdminDashboard";
+import Users from "@/pages/AdminDashboard/Users";
+import InstitutionDashboard from "@/pages/InstitutionDashboard/InstitutionDashboard";
 
 const AppRoute: React.FC = () => {
   const { authUser } = useAuth();
@@ -65,7 +68,7 @@ const AppRoute: React.FC = () => {
                     <div className="bg-white p-6 rounded-lg shadow">
                       <p>Manage your applications</p>
                       {/* Custom analytics */}
-                      <Analytics  showDeadlines={false} />
+                      <Analytics showDeadlines={false} />
                     </div>
                   </div>
                 </Layout>
@@ -91,6 +94,55 @@ const AppRoute: React.FC = () => {
               element={
                 <Layout>
                   <Profile />
+                </Layout>
+              }
+            />
+            {/* Admin Routes */}
+            <Route
+              path="/admin"
+              element={
+                <Layout>
+                  <AdminDashboard />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <Layout>
+                  <Users />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/institutions"
+              element={
+                <Layout>
+                  <InstitutionDashboard />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/programs"
+              element={
+                <Layout>
+                  <ProgramsList />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/analytics"
+              element={
+                <Layout>
+                  <AdminDashboard />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/settings"
+              element={
+                <Layout>
+                  <AdminDashboard />
                 </Layout>
               }
             />

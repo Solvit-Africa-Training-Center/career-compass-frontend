@@ -15,7 +15,7 @@ import {
     Calendar,
     MessageSquare
 } from "lucide-react";
-import { SidebarLink } from '@/types/index';
+import type{ SidebarLink } from '@/types/index';
 
 export const STUDENT_SIDEBAR_LINKS: SidebarLink[] = [
     {
@@ -48,7 +48,7 @@ export const ADMIN_SIDEBAR_LINKS: SidebarLink[] = [
     {
         key:'dashboard',
         label:'Dashboard',
-        path:'/admin/dashboard',
+        path:'/admin',
         icon:<LayoutDashboard size={20} strokeWidth={2.5}/>
     },
     {
@@ -73,7 +73,7 @@ export const ADMIN_SIDEBAR_LINKS: SidebarLink[] = [
         key:'analytics',
         label:'Analytics',
         path:'/admin/analytics',
-        icon:<BarChart3 size={20} strokeWidth={2.5}/>
+        icon:<BarChart3 size={20} strokeWidth={2.5} />
     },
     {
         key:'settings',
