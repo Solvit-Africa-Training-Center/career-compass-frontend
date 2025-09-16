@@ -22,6 +22,7 @@ import ProgramFeatures from "@/pages/AdminDashboard/ProgramFeatures";
 import ProgramRequirements from "@/pages/AdminDashboard/ProgramRequirements";
 import AdmissionRequirements from "@/pages/AdminDashboard/AdmissionRequirements";
 import InstitutionDashboard from "@/pages/InstitutionDashboard/InstitutionDashboard";
+import AdminAnalytics from "@/pages/AdminDashboard/AdminAnalytics";
 
 const AppRoute: React.FC = () => {
   const { authUser } = useAuth();
@@ -181,7 +182,7 @@ const AppRoute: React.FC = () => {
               path="/admin/analytics"
               element={
                 <Layout>
-                  <AdminDashboard />
+                  <AdminAnalytics />
                 </Layout>
               }
             />

@@ -10,12 +10,15 @@ import { toast } from 'sonner';
 
 interface ProgramFee {
   id: string;
-  program_id: string;
-  tuition_amount: number;
+  program: string;
+  tuition_fee: string;
+  tuition_amount: string;
   tuition_currency: string;
-  application_fee_amount: number;
-  deposit_amount: number;
+  application_fee_amount: string;
+  deposit_amount: string;
   has_scholarship: boolean;
+  scholarship_percent: string;
+  is_active: boolean;
 }
 
 interface Program {
@@ -31,12 +34,15 @@ const ProgramFees = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [selectedFee, setSelectedFee] = useState<ProgramFee | null>(null);
   const [formData, setFormData] = useState({
-    program_id: '',
+    program: '',
+    tuition_fee: '',
     tuition_amount: '',
     tuition_currency: 'USD',
     application_fee_amount: '',
     deposit_amount: '',
-    has_scholarship: false
+    has_scholarship: false,
+    scholarship_percent: '',
+    is_active: true
   });
 
   const fetchFees = async () => {
@@ -72,15 +78,25 @@ const ProgramFees = () => {
   };
 
   const handleAddFee = async () => {
+    if (!formData.program) {
+      toast.error('Please select a program');
+      return;
+    }
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
       const payload = {
-        ...formData,
-        tuition_amount: parseFloat(formData.tuition_amount) || 0,
-        application_fee_amount: parseFloat(formData.application_fee_amount) || 0,
-        deposit_amount: parseFloat(formData.deposit_amount) || 0
+        program: formData.program,
+        tuition_fee: formData.tuition_fee,
+        tuition_amount: formData.tuition_amount,
+        tuition_currency: formData.tuition_currency,
+        application_fee_amount: formData.application_fee_amount,
+        deposit_amount: formData.deposit_amount,
+        has_scholarship: formData.has_scholarship,
+        scholarship_percent: formData.scholarship_percent,
+        is_active: formData.is_active
       };
+      console.log('Sending program fee data:', payload);
       await CallApi.post(backend_path.ADD_PROGRAM_FEE, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -89,8 +105,9 @@ const ProgramFees = () => {
       resetForm();
       fetchFees();
     } catch (error: any) {
+      console.error('Program fee creation error:', error.response?.data);
       if (error?.response?.status === 400) {
-        const errorMsg = error.response?.data?.detail || 'Invalid data provided';
+        const errorMsg = error.response?.data?.detail || error.response?.data?.message || 'Invalid data provided';
         toast.error(`Validation error: ${errorMsg}`);
       } else {
         toast.error('Failed to add program fee');
@@ -102,15 +119,25 @@ const ProgramFees = () => {
 
   const handleUpdateFee = async () => {
     if (!selectedFee) return;
+    if (!formData.program) {
+      toast.error('Please select a program');
+      return;
+    }
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
       const payload = {
-        ...formData,
-        tuition_amount: parseFloat(formData.tuition_amount) || 0,
-        application_fee_amount: parseFloat(formData.application_fee_amount) || 0,
-        deposit_amount: parseFloat(formData.deposit_amount) || 0
+        program: formData.program,
+        tuition_fee: formData.tuition_fee,
+        tuition_amount: formData.tuition_amount,
+        tuition_currency: formData.tuition_currency,
+        application_fee_amount: formData.application_fee_amount,
+        deposit_amount: formData.deposit_amount,
+        has_scholarship: formData.has_scholarship,
+        scholarship_percent: formData.scholarship_percent,
+        is_active: formData.is_active
       };
+      console.log('Updating program fee data:', payload);
       await CallApi.put(`${backend_path.UPDATE_PROGRAM_FEE}${selectedFee.id}/`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -120,8 +147,9 @@ const ProgramFees = () => {
       resetForm();
       fetchFees();
     } catch (error: any) {
+      console.error('Program fee update error:', error.response?.data);
       if (error?.response?.status === 400) {
-        const errorMsg = error.response?.data?.detail || 'Invalid data provided';
+        const errorMsg = error.response?.data?.detail || error.response?.data?.message || 'Invalid data provided';
         toast.error(`Validation error: ${errorMsg}`);
       } else {
         toast.error('Failed to update program fee');
@@ -151,24 +179,30 @@ const ProgramFees = () => {
   const openEditDialog = (fee: ProgramFee) => {
     setSelectedFee(fee);
     setFormData({
-      program_id: fee.program_id,
-      tuition_amount: fee.tuition_amount.toString(),
+      program: fee.program,
+      tuition_fee: fee.tuition_fee,
+      tuition_amount: fee.tuition_amount,
       tuition_currency: fee.tuition_currency,
-      application_fee_amount: fee.application_fee_amount.toString(),
-      deposit_amount: fee.deposit_amount.toString(),
-      has_scholarship: fee.has_scholarship
+      application_fee_amount: fee.application_fee_amount,
+      deposit_amount: fee.deposit_amount,
+      has_scholarship: fee.has_scholarship,
+      scholarship_percent: fee.scholarship_percent,
+      is_active: fee.is_active
     });
     setEditOpen(true);
   };
 
   const resetForm = () => {
     setFormData({
-      program_id: '',
+      program: '',
+      tuition_fee: '',
       tuition_amount: '',
       tuition_currency: 'USD',
       application_fee_amount: '',
       deposit_amount: '',
-      has_scholarship: false
+      has_scholarship: false,
+      scholarship_percent: '',
+      is_active: true
     });
   };
 
@@ -345,7 +379,7 @@ const ProgramFees = () => {
             ) : (
               fees.map((fee) => (
                 <TableRow key={fee.id} className="hover:bg-gray-50">
-                  <TableCell className="font-medium text-gray-900">{getProgramName(fee.program_id)}</TableCell>
+                  <TableCell className="font-medium text-gray-900">{getProgramName(fee.program)}</TableCell>
                   <TableCell className="hidden sm:table-cell text-gray-700">
                     {fee.tuition_amount} {fee.tuition_currency}
                   </TableCell>
