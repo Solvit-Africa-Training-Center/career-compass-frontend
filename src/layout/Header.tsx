@@ -174,13 +174,13 @@ const Header: React.FC<HeaderProps> = ({
               
               <div className={`border-t my-1 ${isDark ? 'border-gray-700' : 'border-gray-100'}`}></div>
               
-              <button
+              {/* <button
                 onClick={logout}
                 className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Logout</span>
-              </button>
+              </button> */}
             </div>
           )}
         </div>
