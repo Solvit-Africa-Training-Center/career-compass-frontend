@@ -2,10 +2,118 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/badge";
-// import { Separator } from "@/components/ui/separator";
 import { Calendar, MapPin, Users, Clock, Check } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import CallApi from "@/utils/CallApi";
+import { backend_path } from "@/utils/enum";
+import { toast } from "sonner";
+import { useTheme } from "@/hooks/useTheme";
+
+interface ProgramDetail {
+  id: number;
+  name: string;
+  description: string;
+  duration: string;
+  language: string;
+  level: string;
+  institution: {
+    id: number;
+    name: string;
+    location: string;
+  };
+  campuses: Array<{
+    id: number;
+    name: string;
+    location: string;
+  }>;
+  intakes: Array<{
+    id: number;
+    intake_date: string;
+    deadline: string;
+    available_seats: number;
+    status: string;
+  }>;
+  fees: Array<{
+    id: number;
+    tuition_amount: string;
+    currency: string;
+    application_fee: string;
+    deposit_amount: string;
+    living_expenses: string;
+  }>;
+  requirements: Array<{
+    id: number;
+    minimum_gpa: string;
+    required_documents: string;
+    language_requirements: string;
+  }>;
+  features: Array<{
+    id: number;
+    feature_text: string;
+  }>;
+}
 
 function ProgramDetails() {
+  const { id } = useParams<{ id: string }>();
+  const { isDark } = useTheme();
+  const [program, setProgram] = useState<ProgramDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (id) {
+      fetchProgramDetails();
+    }
+  }, [id]);
+
+  const fetchProgramDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await CallApi.get(`${backend_path.GET_PROGRAM_ID}${id}/`);
+      setProgram(response.data);
+    } catch (error) {
+      console.error('Error fetching program details:', error);
+      toast.error('Failed to load program details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <ScrollArea className="h-full">
+        <div className="p-6 space-y-8">
+          <div className="animate-pulse">
+            <div className="h-64 bg-gray-300 rounded-xl mb-8"></div>
+            <div className="h-8 bg-gray-300 rounded mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="h-48 bg-gray-200 rounded"></div>
+              <div className="h-48 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </ScrollArea>
+    );
+  }
+
+  if (!program) {
+    return (
+      <ScrollArea className="h-full">
+        <div className="p-6 text-center">
+          <h2 className="text-2xl font-bold mb-4">Program Not Found</h2>
+          <p className="text-gray-600 mb-4">The program you're looking for doesn't exist.</p>
+          <Button onClick={() => window.history.back()}>Go Back</Button>
+        </div>
+      </ScrollArea>
+    );
+  }
+
+  const latestIntake = program.intakes?.[0];
+  const fees = program.fees?.[0];
+  const requirements = program.requirements?.[0];
+
   return (
     <ScrollArea className="h-full">
       <div className="p-6 space-y-8">
@@ -15,17 +123,15 @@ function ProgramDetails() {
             <div className="w-full md:w-2/3 p-6 flex flex-col justify-between">
               <CardHeader className="p-0">
                 <p className="text-[#FBBC04] text-sm font-medium">
-                  University of California
+                  {program.institution?.name}
                 </p>
                 <CardTitle className="text-white text-3xl font-bold">
-                  Computer Science, BSc
+                  {program.name}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <p className="text-white text-base mb-4">
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry. Lorem Ipsum has been the industry's
-                  standard dummy text ever since the 1500s.
+                  {program.description || 'Comprehensive program designed to provide students with essential knowledge and skills in their chosen field of study.'}
                 </p>
                 <Button className="bg-[#FBBC04] text-[#0E4091] hover:bg-[#e0a903] font-bold">
                   Apply Now
@@ -46,43 +152,38 @@ function ProgramDetails() {
         {/* Program Overview and Eligibility Check Button */}
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <h2 className="text-2xl font-bold mb-4">Computer Science, BSc</h2>
-            <p className="text-gray-600 mb-4">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s.
+            <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>{program.name}</h2>
+            <p className={`mb-4 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+              {program.description || 'Comprehensive program designed to provide students with essential knowledge and skills in their chosen field of study.'}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ul className="space-y-2 text-sm">
+              <ul className={`space-y-2 text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 <li>
-                  <b>Duration:</b> 4 years (8 semesters)
+                  <b>Duration:</b> {program.duration || 'Not specified'}
                 </li>
                 <li>
-                  <b>Level:</b> Bachelor's Degree
+                  <b>Level:</b> {program.level || 'Not specified'}
                 </li>
                 <li>
                   <b>Study mode:</b> Full-time
                 </li>
                 <li>
-                  <b>Language:</b> English
+                  <b>Language:</b> {program.language || 'English'}
                 </li>
                 <li>
-                  <b>Campus:</b> Los Angeles, California, USA
+                  <b>Campus:</b> {program.campuses?.[0]?.location || program.institution?.location || 'Not specified'}
                 </li>
               </ul>
-              <ul className="space-y-2 text-sm font-medium">
-                <li>
-                  <span className="text-green-500">🏠</span> On-campus housing
-                  available
-                </li>
-                <li>
-                  <span className="text-green-500">💼</span> Internship
-                  opportunities
-                </li>
-                <li>
-                  <span className="text-green-500">🚌</span> Campus shuttle
-                  service
-                </li>
+              <ul className={`space-y-2 text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                {program.features?.slice(0, 3).map((feature, index) => (
+                  <li key={feature.id}>
+                    <span className="text-green-500">✓</span> {feature.feature_text}
+                  </li>
+                )) || [
+                  <li key="1"><span className="text-green-500">🏠</span> On-campus housing available</li>,
+                  <li key="2"><span className="text-green-500">💼</span> Internship opportunities</li>,
+                  <li key="3"><span className="text-green-500">🚌</span> Campus shuttle service</li>
+                ]}
               </ul>
             </div>
           </div>
@@ -93,68 +194,78 @@ function ProgramDetails() {
         </div>
 
         {/* Admission Requirements */}
-        <div className="bg-white p-6 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">Admission Requirements</h2>
+        <div className={`p-6 rounded-lg ${isDark ? 'bg-primarycolor-900' : 'bg-white'}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Admission Requirements</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
             <div>
-              <h3 className="font-semibold mb-2">Academic Requirements</h3>
-              <ul className="space-y-1 text-gray-600">
+              <h3 className={`font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Academic Requirements</h3>
+              <ul className={`space-y-1 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                 <li className="flex items-center">
-                  <span className="text-[#0E4091] mr-2">•</span> High school
-                  diploma or equivalent
+                  <span className="text-[#0E4091] mr-2">•</span> High school diploma or equivalent
                 </li>
                 <li className="flex items-center">
-                  <span className="text-[#0E4091] mr-2">•</span> Minimum GPA:
-                  3.5/4.0
+                  <span className="text-[#0E4091] mr-2">•</span> Minimum GPA: {requirements?.minimum_gpa || '3.0/4.0'}
                 </li>
                 <li className="flex items-center">
-                  <span className="text-[#0E4091] mr-2">•</span> Mathematics:
-                  Pre-Calculus
+                  <span className="text-[#0E4091] mr-2">•</span> Mathematics: Pre-Calculus
                 </li>
                 <li className="flex items-center">
-                  <span className="text-[#0E4091] mr-2">•</span> Science:
-                  Physics etc
+                  <span className="text-[#0E4091] mr-2">•</span> Science: Physics etc
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold mb-2">Language Requirements</h3>
-              <ul className="space-y-1 text-gray-600">
-                <li className="flex items-center">
-                  <span className="text-[#0E4091] mr-2">•</span> TOEFL: 4 years
-                  (8 semesters)
-                </li>
-                <li className="flex items-center">
-                  <span className="text-[#0E4091] mr-2">•</span> IELTS:
-                  Bachelor's Degree
-                </li>
-                <li className="flex items-center">
-                  <span className="text-[#0E4091] mr-2">•</span> SAT: Full-time
-                </li>
+              <h3 className={`font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Language Requirements</h3>
+              <ul className={`space-y-1 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                {requirements?.language_requirements ? (
+                  requirements.language_requirements.split(',').map((req, index) => (
+                    <li key={index} className="flex items-center">
+                      <span className="text-[#0E4091] mr-2">•</span> {req.trim()}
+                    </li>
+                  ))
+                ) : (
+                  <>
+                    <li className="flex items-center">
+                      <span className="text-[#0E4091] mr-2">•</span> TOEFL: 80+ iBT
+                    </li>
+                    <li className="flex items-center">
+                      <span className="text-[#0E4091] mr-2">•</span> IELTS: 6.5+
+                    </li>
+                    <li className="flex items-center">
+                      <span className="text-[#0E4091] mr-2">•</span> SAT: 1200+
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold mb-2">Required Documents</h3>
-              <ul className="space-y-1 text-gray-600">
-                <li className="flex items-center">
-                  <span className="text-[#0E4091] mr-2">•</span> High School
-                  Diploma
-                </li>
-                <li className="flex items-center">
-                  <span className="text-[#0E4091] mr-2">•</span> Official
-                  Transcript
-                </li>
-                <li className="flex items-center">
-                  <span className="text-[#0E4091] mr-2">•</span> Passport Copy
-                </li>
-                <li className="flex items-center">
-                  <span className="text-[#0E4091] mr-2">•</span> English
-                  Proficiency Test
-                </li>
-                <li className="flex items-center">
-                  <span className="text-[#0E4091] mr-2">•</span> Letter of
-                  Recommendation
-                </li>
+              <h3 className={`font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Required Documents</h3>
+              <ul className={`space-y-1 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                {requirements?.required_documents ? (
+                  requirements.required_documents.split(',').map((doc, index) => (
+                    <li key={index} className="flex items-center">
+                      <span className="text-[#0E4091] mr-2">•</span> {doc.trim()}
+                    </li>
+                  ))
+                ) : (
+                  <>
+                    <li className="flex items-center">
+                      <span className="text-[#0E4091] mr-2">•</span> High School Diploma
+                    </li>
+                    <li className="flex items-center">
+                      <span className="text-[#0E4091] mr-2">•</span> Official Transcript
+                    </li>
+                    <li className="flex items-center">
+                      <span className="text-[#0E4091] mr-2">•</span> Passport Copy
+                    </li>
+                    <li className="flex items-center">
+                      <span className="text-[#0E4091] mr-2">•</span> English Proficiency Test
+                    </li>
+                    <li className="flex items-center">
+                      <span className="text-[#0E4091] mr-2">•</span> Letter of Recommendation
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
           </div>
@@ -162,71 +273,116 @@ function ProgramDetails() {
 
         {/* Fees & Program Features */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-6 bg-white rounded-lg">
-            <h2 className="text-2xl font-bold mb-4">Fees Structure (Per Year)</h2>
+          <div className={`p-6 rounded-lg ${isDark ? 'bg-primarycolor-900' : 'bg-white'}`}>
+            <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Fees Structure (Per Year)</h2>
             <div className="grid grid-cols-2 gap-4 text-center">
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <p className="text-xl font-bold text-[#0E4091]">$45,000</p>
-                <p className="text-sm">Tuition Fee</p>
+              <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                <p className="text-xl font-bold text-[#0E4091]">
+                  {fees?.currency || '$'}{fees?.tuition_amount || '45,000'}
+                </p>
+                <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Tuition Fee</p>
               </div>
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <p className="text-xl font-bold text-[#0E4091]">$25,00</p>
-                <p className="text-sm">Deposit</p>
+              <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                <p className="text-xl font-bold text-[#0E4091]">
+                  {fees?.currency || '$'}{fees?.deposit_amount || '2,500'}
+                </p>
+                <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Deposit</p>
               </div>
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <p className="text-xl font-bold text-red-500">$105</p>
-                <p className="text-sm">Application Fee</p>
+              <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                <p className="text-xl font-bold text-red-500">
+                  {fees?.currency || '$'}{fees?.application_fee || '105'}
+                </p>
+                <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Application Fee</p>
               </div>
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <p className="text-xl font-bold text-green-600">$18,000</p>
-                <p className="text-sm">Living Expenses</p>
+              <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                <p className="text-xl font-bold text-green-600">
+                  {fees?.currency || '$'}{fees?.living_expenses || '18,000'}
+                </p>
+                <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Living Expenses</p>
               </div>
             </div>
           </div>
-          <div className="p-6 bg-white rounded-lg">
-            <h2 className="text-2xl font-bold mb-4">Program features</h2>
-            <ul className="space-y-2 text-sm">
+          <div className={`p-6 rounded-lg ${isDark ? 'bg-primarycolor-900' : 'bg-white'}`}>
+            <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Program features</h2>
+            <ul className={`space-y-2 text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               <li className="flex items-center gap-2">
-                <MapPin size={16} className="text-[#0E4091]" /> Boston, MA, USA
+                <MapPin size={16} className="text-[#0E4091]" /> 
+                {program.campuses?.[0]?.location || program.institution?.location || 'Location not specified'}
               </li>
               <li className="flex items-center gap-2">
-                <Calendar size={16} className="text-[#0E4091]" /> 12 Sept, 2026
+                <Calendar size={16} className="text-[#0E4091]" /> 
+                {latestIntake?.deadline ? new Date(latestIntake.deadline).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Deadline not specified'}
               </li>
               <li className="flex items-center gap-2">
-                <Users size={16} className="text-[#0E4091]" /> 120 seats remain
+                <Users size={16} className="text-[#0E4091]" /> 
+                {latestIntake?.available_seats || 0} seats remain
               </li>
               <li className="flex items-center gap-2">
-                <Clock size={16} className="text-[#0E4091]" /> 2 months to close
+                <Clock size={16} className="text-[#0E4091]" /> 
+                {latestIntake?.status === 'open' ? 'Applications open' : 'Applications closed'}
               </li>
             </ul>
           </div>
         </div>
 
         {/* Available Intakes */}
-        <div className="p-6 bg-white rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">Available Intakes</h2>
+        <div className={`p-6 rounded-lg ${isDark ? 'bg-primarycolor-900' : 'bg-white'}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Available Intakes</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Badge className="bg-green-600 text-white font-semibold rounded-md py-1 px-3">
-                Fall 2026 - September (Open)
-              </Badge>
-              <Badge className="bg-gray-400 text-white font-semibold rounded-md py-1 px-3">
-                Winter 2027 - January (Closed)
-              </Badge>
-              <Badge className="bg-[#FBBC04] text-white font-semibold rounded-md py-1 px-3">
-                Summer 2027 - June (Limited Seats)
-              </Badge>
+              {program.intakes?.length > 0 ? (
+                program.intakes.map((intake) => {
+                  const intakeDate = new Date(intake.intake_date);
+                  const isOpen = intake.status === 'open';
+                  const hasLimitedSeats = intake.available_seats < 50;
+                  
+                  return (
+                    <Badge 
+                      key={intake.id}
+                      className={`font-semibold rounded-md py-1 px-3 ${
+                        isOpen 
+                          ? hasLimitedSeats 
+                            ? 'bg-[#FBBC04] text-white' 
+                            : 'bg-green-600 text-white'
+                          : 'bg-gray-400 text-white'
+                      }`}
+                    >
+                      {intakeDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} 
+                      ({isOpen ? hasLimitedSeats ? 'Limited Seats' : 'Open' : 'Closed'})
+                    </Badge>
+                  );
+                })
+              ) : (
+                <>
+                  <Badge className="bg-green-600 text-white font-semibold rounded-md py-1 px-3">
+                    Fall 2026 - September (Open)
+                  </Badge>
+                  <Badge className="bg-gray-400 text-white font-semibold rounded-md py-1 px-3">
+                    Winter 2027 - January (Closed)
+                  </Badge>
+                </>
+              )}
             </div>
             <div className="flex flex-col gap-2 font-semibold">
-              <div className="bg-[#FBBC04] text-[#0E4091] rounded-md py-1 px-3">
-                Deadline: Fall - May 1st
-              </div>
-              <div className="bg-[#FBBC04] text-[#0E4091] rounded-md py-1 px-3">
-                Deadline: Fall - May 1st
-              </div>
-              <div className="bg-[#FBBC04] text-[#0E4091] rounded-md py-1 px-3">
-                Deadline: Fall - May 1st
-              </div>
+              {program.intakes?.length > 0 ? (
+                program.intakes.map((intake) => {
+                  const deadline = new Date(intake.deadline);
+                  return (
+                    <div key={`deadline-${intake.id}`} className="bg-[#FBBC04] text-[#0E4091] rounded-md py-1 px-3">
+                      Deadline: {deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </div>
+                  );
+                })
+              ) : (
+                <>
+                  <div className="bg-[#FBBC04] text-[#0E4091] rounded-md py-1 px-3">
+                    Deadline: Fall - May 1st
+                  </div>
+                  <div className="bg-[#FBBC04] text-[#0E4091] rounded-md py-1 px-3">
+                    Deadline: Winter - Oct 1st
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

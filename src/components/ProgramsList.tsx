@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Filter } from 'lucide-react';
 import ProgramCard from './ProgramCard';
 import { useTheme } from '@/hooks/useTheme';
@@ -11,6 +11,9 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { ProgramsDashboardAnalytics } from './Analytics';
+import CallApi from '@/utils/CallApi';
+import { backend_path } from '@/utils/enum';
+import { toast } from 'sonner';
 
 interface Program {
   id: string;
@@ -24,96 +27,110 @@ interface Program {
   isUrgent?: boolean;
 }
 
+interface BackendProgram {
+  id: number;
+  name: string;
+  description: string;
+  duration: string;
+  language: string;
+  level: string;
+  institution: {
+    id: number;
+    name: string;
+    location: string;
+  };
+  campuses: Array<{
+    id: number;
+    name: string;
+    location: string;
+  }>;
+  intakes: Array<{
+    id: number;
+    intake_date: string;
+    deadline: string;
+    available_seats: number;
+    status: string;
+  }>;
+}
+
 interface ProgramsListProps {
   title?: string;
   programs?: Program[];
   onApply?: (programId: string) => void;
 }
 
-const mockPrograms: Program[] = [
-  {
-    id: '1',
-    title: 'Computer Science',
-    institution: 'Massachusetts Institute of Technology',
-    location: 'Boston, MA, USA',
-    seatsRemain: 120,
-    deadline: '12,Sept,2026',
-    timeToClose: '2 months to close',
-    status: 'Open'
-  },
-  {
-    id: '2',
-    title: 'Data Science',
-    institution: 'Stanford University',
-    location: 'Stanford, CA, USA',
-    seatsRemain: 85,
-    deadline: '15,Oct,2026',
-    timeToClose: '23 hours to close',
-    status: 'Open',
-    isUrgent: true
-  },
-  {
-    id: '3',
-    title: 'Software Engineering',
-    institution: 'Carnegie Mellon University',
-    location: 'Pittsburgh, PA, USA',
-    seatsRemain: 95,
-    deadline: '20,Nov,2026',
-    timeToClose: '3 months to close',
-    status: 'Open'
-  },
-  {
-    id: '4',
-    title: 'Artificial Intelligence',
-    institution: 'University of California Berkeley',
-    location: 'Berkeley, CA, USA',
-    seatsRemain: 0,
-    deadline: '01,Aug,2026',
-    timeToClose: 'Closed',
-    status: 'Closed'
-  },
-  {
-    id: '5',
-    title: 'Cybersecurity',
-    institution: 'Georgia Institute of Technology',
-    location: 'Atlanta, GA, USA',
-    seatsRemain: 150,
-    deadline: '30,Dec,2026',
-    timeToClose: '4 months to close',
-    status: 'Open'
-  },
-  {
-    id: '6',
-    title: 'Machine Learning',
-    institution: 'University of Washington',
-    location: 'Seattle, WA, USA',
-    seatsRemain: 75,
-    deadline: '10,Jan,2027',
-    timeToClose: '5 months to close',
-    status: 'Open'
-  },
-  // {
-  //   id: '7',
-  //   title: 'Machine Learning',
-  //   institution: 'University of Washington',
-  //   location: 'Seattle, WA, USA',
-  //   seatsRemain: 75,
-  //   deadline: '10,Jan,2027',
-  //   timeToClose: '5 months to close',
-  //   status: 'Open'
-  // },
-];
+const transformBackendProgram = (backendProgram: BackendProgram): Program => {
+  const latestIntake = backendProgram.intakes?.[0] || {};
+  const deadline = new Date(latestIntake.deadline || '');
+  const now = new Date();
+  const timeDiff = deadline.getTime() - now.getTime();
+  const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  
+  let timeToClose = 'Closed';
+  let isUrgent = false;
+  let status: 'Open' | 'Closed' = 'Closed';
+  
+  if (latestIntake.status === 'open' && daysLeft > 0) {
+    status = 'Open';
+    if (daysLeft <= 7) {
+      timeToClose = `${daysLeft} days to close`;
+      isUrgent = true;
+    } else if (daysLeft <= 30) {
+      timeToClose = `${Math.ceil(daysLeft / 7)} weeks to close`;
+    } else {
+      timeToClose = `${Math.ceil(daysLeft / 30)} months to close`;
+    }
+  }
+  
+  return {
+    id: backendProgram.id.toString(),
+    title: backendProgram.name,
+    institution: backendProgram.institution?.name || 'Unknown Institution',
+    location: backendProgram.campuses?.[0]?.location || backendProgram.institution?.location || 'Unknown Location',
+    seatsRemain: latestIntake.available_seats || 0,
+    deadline: deadline.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
+    timeToClose,
+    status,
+    isUrgent
+  };
+};
 
 const ProgramsList: React.FC<ProgramsListProps> = ({ 
   title = "Programs related to your interest",
-  programs = mockPrograms,
+  programs: propPrograms,
   onApply
 }) => {
   const { isDark } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 8;
+
+  useEffect(() => {
+    if (propPrograms) {
+      setPrograms(propPrograms);
+      setLoading(false);
+    } else {
+      fetchPrograms();
+    }
+  }, [propPrograms]);
+
+  const fetchPrograms = async () => {
+    try {
+      setLoading(true);
+      const response = await CallApi.get(backend_path.GET_PROGRAM);
+      const backendPrograms: BackendProgram[] = response.data.results || response.data;
+      const transformedPrograms = backendPrograms.map(transformBackendProgram);
+      setPrograms(transformedPrograms);
+    } catch (error) {
+      console.error('Error fetching programs:', error);
+      toast.error('Failed to load programs');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredPrograms = useMemo(() => {
     return programs.filter(program => 
@@ -193,15 +210,41 @@ const ProgramsList: React.FC<ProgramsListProps> = ({
       )}
 
       {/* Programs Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-        {paginatedPrograms.map((program) => (
-          <ProgramCard 
-            key={program.id} 
-            program={program} 
-            onApply={onApply}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className={`p-4 rounded-lg border animate-pulse ${
+              isDark ? 'bg-primarycolor-900 border-gray-700' : 'bg-white border-gray-200'
+            }`}>
+              <div className="h-4 bg-gray-300 rounded mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded mb-4"></div>
+              <div className="h-3 bg-gray-200 rounded mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded mb-4"></div>
+              <div className="flex space-x-2">
+                <div className="flex-1 h-8 bg-gray-300 rounded"></div>
+                <div className="w-20 h-8 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : paginatedPrograms.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+          {paginatedPrograms.map((program) => (
+            <ProgramCard 
+              key={program.id} 
+              program={program} 
+              onApply={onApply}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className={`text-center py-12 ${
+          isDark ? 'text-gray-400' : 'text-gray-500'
+        }`}>
+          <p className="text-lg mb-2">No programs found</p>
+          <p className="text-sm">Try adjusting your search criteria</p>
+        </div>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (

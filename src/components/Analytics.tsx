@@ -3,6 +3,8 @@ import StatCard from '@/components/cards/StatCard';
 import DeadlineCard from './DeadlineCard';
 import type { AnalyticsProps, StatCardData, DeadlineItem } from '@/types/';
 import { useTheme } from '@/hooks/useTheme';
+import CallApi from '@/utils/CallApi';
+import { backend_path } from '@/utils/enum';
 
 // Default data for the first dashboard
 const defaultStudentStats: StatCardData[] = [
@@ -52,26 +54,26 @@ const defaultDeadlines: DeadlineItem[] = [
 // Default data for the programs dashboard
 const defaultProgramStats: StatCardData[] = [
   {
-    title: 'Related Program',
-    value: '200',
+    title: 'Total Programs',
+    value: '0',
     change: '',
     changeType: 'neutral',
     icon: 'applications',
     color: 'yellow'
   },
   {
-    title: 'Weekly Programs',
-    value: '30',
-    change: '+2 this week',
-    changeType: 'increase',
+    title: 'Open Programs',
+    value: '0',
+    change: '',
+    changeType: 'neutral',
     icon: 'eligibility',
     color: 'green'
   },
   {
-    title: 'Monthly programs',
-    value: '12',
-    change: '+2 this month',
-    changeType: 'increase',
+    title: 'Available Seats',
+    value: '0',
+    change: '',
+    changeType: 'neutral',
     icon: 'programs',
     color: 'red'
   }
@@ -138,13 +140,66 @@ export const StudentDashboardAnalytics: React.FC<Partial<AnalyticsProps>> = (pro
   />
 );
 
-export const ProgramsDashboardAnalytics: React.FC<Partial<AnalyticsProps>> = (props) => (
-  <Analytics 
-    stats={defaultProgramStats}
-    deadlines={[]}
-    showDeadlines={false}
-    {...props}
-  />
-);
+export const ProgramsDashboardAnalytics: React.FC<Partial<AnalyticsProps>> = (props) => {
+  const [programStats, setProgramStats] = React.useState(defaultProgramStats);
+
+  React.useEffect(() => {
+    const fetchProgramStats = async () => {
+      try {
+        const response = await CallApi.get(backend_path.GET_PROGRAM);
+        const programs = response.data.results || response.data;
+        
+        const totalPrograms = programs.length;
+        const openPrograms = programs.filter((p: any) => 
+          p.intakes?.some((intake: any) => intake.status === 'open')
+        ).length;
+        const totalSeats = programs.reduce((sum: number, p: any) => 
+          sum + (p.intakes?.reduce((intakeSum: number, intake: any) => 
+            intakeSum + (intake.available_seats || 0), 0) || 0), 0
+        );
+
+        setProgramStats([
+          {
+            title: 'Total Programs',
+            value: totalPrograms.toString(),
+            change: '',
+            changeType: 'neutral',
+            icon: 'applications',
+            color: 'yellow'
+          },
+          {
+            title: 'Open Programs',
+            value: openPrograms.toString(),
+            change: '',
+            changeType: 'neutral',
+            icon: 'eligibility',
+            color: 'green'
+          },
+          {
+            title: 'Available Seats',
+            value: totalSeats.toString(),
+            change: '',
+            changeType: 'neutral',
+            icon: 'programs',
+            color: 'red'
+          }
+        ]);
+      } catch (error) {
+        console.error('Error fetching program stats:', error);
+      }
+    };
+
+    fetchProgramStats();
+  }, []);
+
+  return (
+    <Analytics 
+      stats={programStats}
+      deadlines={[]}
+      showDeadlines={false}
+      {...props}
+    />
+  );
+};
 
 export default Analytics;
