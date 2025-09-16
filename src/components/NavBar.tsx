@@ -26,12 +26,13 @@ const NavBar = () => {
   return (
     <>
       <header className={`fixed top-0 left-0 right-0 z-50 flex-shrink-0 ${isDark ? 'bg-primarycolor-900' : 'bg-white'}`}>
-        <nav className={`flex justify-between items-center max-w-6xl mx-auto px-4 md:px-7 py-4 md:py-7 border-b  ${isDark ? 'border-gray-700 bg-primarycolor-900' : 'border-gray-200 bg-white'}`}>
+        <nav className={`flex justify-between items-center max-w-7xl mx-auto px-4 md:px-7 py-4 md:py-7 border-b  ${isDark ? 'border-gray-700 bg-primarycolor-900' : 'border-gray-200 bg-white'}`}>
           <div className={`flex gap-2 items-center text-xl md:text-2xl font-bold ${isDark ? 'text-white' : 'text-black'}`}>
-            <BookOpen className="text-primarycolor-500" size={32} />
+            {/* <BookOpen className="text-primarycolor-500" size={32} />
             <h1>
               Career <span className="text-primarycolor-500 ">Compass</span>
-            </h1>
+            </h1> */}
+            <img src="career compass logo.svg" alt="Logo" className="h-10 md:h-14" />
           </div>
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6 lg:space-x-8">

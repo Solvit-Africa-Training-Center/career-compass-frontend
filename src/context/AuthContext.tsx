@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (formData: { email: string; password: string }) => {
     try {
       setLoading(true);
-      console.log('Login request data:', formData); // Log request data
+      console.log('Login request data:', formData);
       const res = await CallApi.post(backend_path.LOGIN, formData);
       let roles: RoleObj[] = [];
       if (res.data.user?.roles && Array.isArray(res.data.user.roles) && res.data.user.roles.length > 0) {
@@ -120,14 +120,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email: res.data.user.email,
         role: roles,
         accessToken: res.data.tokens.access,
-        // refreshToken: res.data.tokens.refresh,
+        refreshToken: res.data.tokens.refresh,
       };
+
+      // Set user in state and localStorage
       setAuthUser(user);
       localStorage.setItem("user", JSON.stringify(user));
-          localStorage.setItem("accessToken", res.data.tokens.access);
-       Cookies.set("accessToken", res.data.tokens.access);
+
+      // Store tokens in both localStorage and cookies
+      localStorage.setItem("accessToken", res.data.tokens.access);
+      localStorage.setItem("refreshToken", res.data.tokens.refresh);
+      
+      // Set cookies with appropriate expiration
+      Cookies.set("accessToken", res.data.tokens.access, { expires: 1 }); // 1 day for access token
+      Cookies.set("refreshToken", res.data.tokens.refresh, { expires: 7 }); // 7 days for refresh token
+      Cookies.set("accessToken", res.data.tokens.access);
+      Cookies.set("refreshToken", res.data.tokens.refresh, { expires: 7 }); // Refresh token expires in 7 days
       toast.success("Login successful!");
-      navigate("/dashboard");
+      // Navigate based on user role
+      const isAdmin = user.role?.some(r => r.code?.toLowerCase() === 'admin');
+      navigate(isAdmin ? "/admin" : "/dashboard");
     } catch (err: unknown) {
       console.error('Login error:', err);
       // Log detailed error response
@@ -152,28 +164,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
-  // const login = async (formData: { email: string; password: string }) => {
-  //   try {
-  //     setLoading(true);
-  //     const [res] = await Promise.all([
-  //       CallApi.post(backend_path.LOGIN, formData),
-  //       new Promise(resolve => setTimeout(resolve, 1000))
-  //     ]);
-  //     const user: User = { email: formData.email, token: res.data.token, role: res.data.role };
-  //     setAuthUser(user);
-  //     sessionStorage.setItem("user", JSON.stringify(user));
-  //     toast.success("Login successful!");
-      
-  //     // Navigate based on user role
-  //     const isAdmin = user.role?.some(r => r.code.toLowerCase() === 'admin');
-  //     navigate(isAdmin ? "/admin" : "/dashboard");
-  //   } catch (err: any) {
-  //     const errorMessage = getErrorMessage(err, 'login');
-  //     toast.error(errorMessage);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
 
   // Verify OTP
   const verifyOTP = async (formData: { email: string; otp: string }) => {
@@ -207,18 +197,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch profile for the signed-in user
   const fetchProfile = async () => {
-    if (!authUser) {
+    if (!authUser || loading) {
       return null;
     }
     try {
       setLoading(true);
-      const res = await CallApi.get(`${backend_path.GET_USER_PROFILE}${authUser.id}/`, {
+      const res = await CallApi.get(`${backend_path.GET_USER_BY_ID}?user=${authUser.id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
       });
       setProfile(res.data);
       return res.data;
     } catch (err: unknown) {
-      toast.error(getErrorMessage(err, "fetch_profile"));
+      // toast.error(getErrorMessage(err, "fetch_profile"));
       return null;
     } finally {
       setLoading(false);
@@ -265,13 +255,65 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [authUser]);
   
   // Logout
-  const logout = () => {
-    setAuthUser(null);
-    localStorage.clear();
-    
-    Cookies.remove("accessToken");
-    toast.success("Logged out successfully!");
-    navigate("/login");
+  // Refresh token
+  const refreshToken = async (): Promise<string | null> => {
+    try {
+      const storedRefreshToken = localStorage.getItem('refreshToken');
+      if (!storedRefreshToken) {
+        return null;
+      }
+
+      const response = await CallApi.post(backend_path.REFRESH_TOKEN, {
+        refresh: storedRefreshToken
+      });
+
+      const { access: newAccessToken } = response.data;
+      
+      // Update tokens
+      localStorage.setItem('accessToken', newAccessToken);
+      Cookies.set('accessToken', newAccessToken, { expires: 1 }); // 1 day expiry for access token
+      
+      if (authUser) {
+        const updatedUser = { ...authUser, accessToken: newAccessToken };
+        setAuthUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+
+      return newAccessToken;
+    } catch (error: unknown) {
+      // If refresh fails, log the user out
+      console.error('Token refresh failed:', error);
+      logout();
+      return null;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (refreshToken) {
+        // Try to call logout endpoint to invalidate the token on the server
+        await CallApi.post(backend_path.LOGOUT, { refresh: refreshToken });
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Continue with local cleanup even if server logout fails
+    } finally {
+      // Clear state
+      setAuthUser(null);
+      setProfile(null);
+      
+      // Clear localStorage
+      localStorage.clear();
+      
+      // Clear cookies
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+      
+      // Show success message and redirect
+      toast.success("Logged out successfully!");
+      navigate("/login");
+    }
   };
 
   // Get Roles for a user (from backend)

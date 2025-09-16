@@ -13,7 +13,11 @@ import {
     GraduationCap,
     BookOpen,
     Calendar,
-    MessageSquare
+    MessageSquare,
+    DollarSign,
+    Star,
+    CheckSquare,
+    ClipboardList
 } from "lucide-react";
 import type{ SidebarLink } from '@/types/index';
 
@@ -64,10 +68,40 @@ export const ADMIN_SIDEBAR_LINKS: SidebarLink[] = [
         icon:<Building2 size={20} strokeWidth={2.5}/>
     },
     {
+        key:'campuses',
+        label:'Campuses',
+        path:'/admin/campuses',
+        icon:<Building2 size={20} strokeWidth={2.5}/>
+    },
+    {
         key:'programs',
         label:'Programs',
         path:'/admin/programs',
         icon:<BookOpen size={20} strokeWidth={2.5}/>
+    },
+    {
+        key:'program-fees',
+        label:'Program Fees',
+        path:'/admin/program-fees',
+        icon:<DollarSign size={20} strokeWidth={2.5}/>
+    },
+    {
+        key:'program-features',
+        label:'Program Features',
+        path:'/admin/program-features',
+        icon:<Star size={20} strokeWidth={2.5}/>
+    },
+    {
+        key:'program-requirements',
+        label:'Program Requirements',
+        path:'/admin/program-requirements',
+        icon:<CheckSquare size={20} strokeWidth={2.5}/>
+    },
+    {
+        key:'admission-requirements',
+        label:'Admission Requirements',
+        path:'/admin/admission-requirements',
+        icon:<ClipboardList size={20} strokeWidth={2.5}/>
     },
     {
         key:'analytics',

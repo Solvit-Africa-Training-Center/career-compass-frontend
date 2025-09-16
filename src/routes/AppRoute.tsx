@@ -14,6 +14,13 @@ import ProgramsList from "@/components/ProgramsList";
 import ProgramDetails from "@/components/program-details";
 import AdminDashboard from "@/pages/AdminDashboard/AdminDashboard";
 import Users from "@/pages/AdminDashboard/Users";
+import Institutions from "@/pages/AdminDashboard/Institutions";
+import Campuses from "@/pages/AdminDashboard/Campuses";
+import Programs from "@/pages/AdminDashboard/Programs";
+import ProgramFees from "@/pages/AdminDashboard/ProgramFees";
+import ProgramFeatures from "@/pages/AdminDashboard/ProgramFeatures";
+import ProgramRequirements from "@/pages/AdminDashboard/ProgramRequirements";
+import AdmissionRequirements from "@/pages/AdminDashboard/AdmissionRequirements";
 import InstitutionDashboard from "@/pages/InstitutionDashboard/InstitutionDashboard";
 
 const AppRoute: React.FC = () => {
@@ -118,7 +125,15 @@ const AppRoute: React.FC = () => {
               path="/admin/institutions"
               element={
                 <Layout>
-                  <InstitutionDashboard />
+                  <Institutions />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/campuses"
+              element={
+                <Layout>
+                  <Campuses />
                 </Layout>
               }
             />
@@ -126,7 +141,39 @@ const AppRoute: React.FC = () => {
               path="/admin/programs"
               element={
                 <Layout>
-                  <ProgramsList />
+                  <Programs />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/program-fees"
+              element={
+                <Layout>
+                  <ProgramFees />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/program-features"
+              element={
+                <Layout>
+                  <ProgramFeatures />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/program-requirements"
+              element={
+                <Layout>
+                  <ProgramRequirements />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/admission-requirements"
+              element={
+                <Layout>
+                  <AdmissionRequirements />
                 </Layout>
               }
             />

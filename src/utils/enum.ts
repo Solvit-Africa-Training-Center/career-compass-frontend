@@ -48,12 +48,12 @@ export const backend_path={
     UPDATE_AGENT:'api/auth/agents/',
     DELETE_AGENT:'api/auth/agents/',
 
-    //CAMPUSS
-    GET_CAMPUS:'api/catalog/campus/',
-    ADD_CAMPUS:'api/catalog/campus/',
-    UPDATE_CAMPUS:'api/catalog/campus/',
-    GET_CAMPUS_ID:'api/catalog/campus/',
-    DELETE_CAMPUS:'api/catalog/campus/',
+    //CAMPUS
+    GET_CAMPUS:'api/catalog/campuses/',
+    ADD_CAMPUS:'api/catalog/campuses/',
+    UPDATE_CAMPUS:'api/catalog/campuses/',
+    GET_CAMPUS_ID:'api/catalog/campuses/',
+    DELETE_CAMPUS:'api/catalog/campuses/',
 
     //CAMPUS FEATURE
     GET_FEATURE:'api/catalog/features/',
