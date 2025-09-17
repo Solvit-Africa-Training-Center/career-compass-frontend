@@ -7,7 +7,7 @@ import { backend_path } from "./enum";
 // Axios instance for handling token refresh to prevent infinite loops
 const refreshAxios = axios.create({
   baseURL: Api,
-  timeout: 10000,
+  timeout: 5000,
 });
 
 const CallApi = axios.create({

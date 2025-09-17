@@ -59,6 +59,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // Register
+  // const register = async (formData: { email: string; password: string; confirmPassword: string }) => {
+  //   if (formData.password !== formData.confirmPassword) {
+  //     toast.error("Passwords do not match");
+  //     return;
+  //   }
+  //   try {
+  //     setLoading(true);
+  //     const res = await CallApi.post(backend_path.REGISTER, {
+  //       email: formData.email,
+  //       password: formData.password,
+  //     });
+  //     if (res.status === 201 || (res.data && (res.data.user?.id || res.data.id))) {
+  //       setRegisteredEmail(formData.email);
+  //       const userId = res.data.user?.id || res.data.id;
+  //       const user: User = {
+  //         id: userId,
+  //         email: formData.email,
+  //         role: [],
+  //         accessToken: "",
+  //         refreshToken: "",
+  //       };
+  //       setAuthUser(user);
+  //       sessionStorage.setItem("user", JSON.stringify(user));
+  //       toast.success("Registration successful! Please check your email for verification.");
+  //       // Add a small delay to allow backend email processing
+  //       setTimeout(() => {
+  //         navigate("/email-verification");
+  //       }, 1000);
+  //     } else {
+  //       toast.error("Registration failed. Please try again.");
+  //     }
+  //   } catch (err: unknown) {
+  //     toast.error(getErrorMessage(err, "registration"));
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+    // Register
   const register = async (formData: { email: string; password: string; confirmPassword: string }) => {
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
@@ -66,33 +104,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     try {
       setLoading(true);
-      const res = await CallApi.post(backend_path.REGISTER, {
-        email: formData.email,
-        password: formData.password,
-      });
-      if (res.status === 201 && res.data.user?.id && studentRole) {
-        setRegisteredEmail(formData.email);
-        // Assign student role after registration
-        await CallApi.post(backend_path.ASSIGN_ROLE, {
-          user_id: res.data.user.id,
-          role_ids: [studentRole.id],
-        });
-        const user: User = {
-          id: res.data.user.id,
+      const [res] = await Promise.all([
+        CallApi.post(backend_path.REGISTER, {
           email: formData.email,
-          role: [studentRole],
-          accessToken: "",
-          refreshToken: "",
-        };
-        setAuthUser(user);
-        sessionStorage.setItem("user", JSON.stringify(user));
+          password: formData.password,
+        }),
+        new Promise(resolve => setTimeout(resolve, 1000))
+      ]);
+      if (res.status === 201) {
+        setRegisteredEmail(formData.email);
         toast.success("Registration successful! Please check your email for verification.");
         navigate("/email-verification");
-      } else {
-        toast.error("Registration failed. Please try again.");
       }
-    } catch (err: unknown) {
-      toast.error(getErrorMessage(err, "registration"));
+    } catch (err: any) {
+      const errorMessage = getErrorMessage(err, 'registration');
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -175,7 +201,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         navigate("/login");
       }
     } catch (error: unknown) {
-      toast.error(getErrorMessage(error, "verify_otp"));
+      console.error('Email verification error:', error);
+      if (error && typeof error === 'object' && 'response' in error) {
+        const response = (error as any).response;
+        if (response?.status === 404) {
+          toast.error("Email verification service is currently unavailable. Please contact support.");
+        } else {
+          toast.error(getErrorMessage(error, "verify_otp"));
+        }
+      } else {
+        toast.error(getErrorMessage(error, "verify_otp"));
+      }
     } finally {
       setLoading(false);
     }
@@ -189,7 +225,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await CallApi.post(backend_path.RESEND_OTP, { email });
       toast.success("OTP sent successfully!");
     } catch (error: unknown) {
-      toast.error(getErrorMessage(error, "resend_otp"));
+      console.error('Resend OTP error:', error);
+      if (error && typeof error === 'object' && 'response' in error) {
+        const response = (error as any).response;
+        if (response?.status === 404) {
+          toast.error("Email service is currently unavailable. Please try again later.");
+        } else {
+          toast.error(getErrorMessage(error, "resend_otp"));
+        }
+      } else {
+        toast.error(getErrorMessage(error, "resend_otp"));
+      }
     } finally {
       setLoading(false);
     }

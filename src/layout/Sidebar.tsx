@@ -120,7 +120,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole = ['student'], isOpen = true
                             to={link.path}
                             className={`flex items-center ${isOpen ? 'space-x-2 lg:space-x-3 px-3 lg:px-4' : 'lg:justify-center lg:px-2'} py-2 lg:py-3 rounded-lg transition-colors duration-200 text-sm lg:text-base ${
                                 isActive(link.path)
-                                    ? isDark ? 'bg-primarycolor-800 text-primarycolor-400 border-r-2 border-primarycolor-400' : 'bg-primarycolor-50 text-primarycolor-600 border-r-1 border-primarycolor-600'
+                                    ? isDark ? 'bg-primarycolor-800 text-primarycolor-400 border-primarycolor-400' : 'bg-primarycolor-50 text-primarycolor-600border-primarycolor-600'
                                     : isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                             }`}
                             title={!isOpen ? link.label : undefined}
