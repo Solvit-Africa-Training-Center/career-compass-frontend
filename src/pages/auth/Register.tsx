@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import LogoHeader from "@/components/LogoHeader";
+import { Link } from "react-router-dom";
 
 const Register = () => {
-  const { register, loading, errors } = useAuth();
+  const { register, loading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -27,9 +28,9 @@ const Register = () => {
   };
 
   return (
-    <>
+    <div className="min-h-screen">
     <LogoHeader />
-    <div className="min-h-screen flex items-center justify-center px-4 py-8">
+    <div className=" flex items-center justify-center px-4 py-8">
       <div className="max-w-xl w-full rounded-2xl shadow-xl border px-8 md:px-12 py-12 bg-white">
         <h1 className="text-3xl md:text-4xl font-bold uppercase text-center text-primarycolor-500 mb-3">
           Welcome to Career Compass
@@ -97,29 +98,33 @@ const Register = () => {
             </button>
           </div>
 
-          {errors && <p className="text-red-500 text-sm">{errors}</p>}
+
 
           <Button
             type="submit"
             disabled={loading}
             className="w-full h-12 mt-8 bg-primarycolor-500 hover:bg-primarycolor-600 text-white font-semibold text-base rounded-md transition-colors duration-300"
           >
-            {loading ? "Creating account..." : "Create an account"}
+            {loading ? (<>
+            <Loader2 className="mr-2 h-12 w-12 animate-spin" />
+            </>):(
+              "Create an account"
+            )}
           </Button>
         </form>
 
         <p className="mt-8 text-center text-gray-700 text-base">
           Already have an account?{" "}
-          <a
-            href="/login"
+          <Link
+            to="/login"
             className="text-primarycolor-500 hover:text-primarycolor-600 font-medium transition-colors duration-300"
           >
             Sign In
-          </a>
+          </Link>
         </p>
       </div>
     </div>
-    </>
+    </div>
   );
 };
 

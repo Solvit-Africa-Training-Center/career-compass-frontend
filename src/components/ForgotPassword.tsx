@@ -7,9 +7,9 @@ import { useNavigate } from "react-router-dom";
 const ForgotPassword = () => {
     const navigate = useNavigate()
   return (
-    <>
+    <div className="min-h-screen">
       <LogoHeader />
-      <div className="min-h-screen flex items-center justify-center px-4 py-8">
+      <div className=" flex items-center justify-center px-4 py-8">
         <div className="max-w-xl w-full rounded-2xl shadow-xl border px-8 md:px-12 py-12 bg-white">
           <div className="flex items-center gap-4 mb-6">
             <ArrowLeft 
@@ -43,7 +43,7 @@ const ForgotPassword = () => {
           </form>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

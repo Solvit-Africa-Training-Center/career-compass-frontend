@@ -1,0 +1,192 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, Bell, ChevronDown, User, Settings, LogOut, Sun, Moon, Menu } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/hooks/useTheme';
+import { Link } from 'react-router-dom';
+
+interface HeaderProps {
+  onSearch?: (query: string) => void;
+  onNotificationClick?: () => void;
+  onMenuClick?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ 
+  onSearch, 
+  onNotificationClick,
+  onMenuClick
+}) => {
+  const { authUser, logout } = useAuth();
+  const { isDark,toggleTheme } = useTheme();
+    const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [notificationCount] = useState(3);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+// Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  if (!authUser) {
+    return null;
+  }
+  
+  const userName = authUser.name || authUser.email.split('@')[0] || 'User';
+    // console.log(authUser.role);
+
+  
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (onSearch && searchQuery.trim()) {
+      onSearch(searchQuery);
+    }
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const capitalizeRole = (roles: string[] | undefined) => {
+  if (!roles || roles.length === 0){
+    return 'No Role Assigned';
+  }
+  return roles.map(r => r.charAt(0).toUpperCase() + r.slice(1)).join(', ');
+};
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  return (
+    <header className={`h-16 ${isDark ? 'bg-primarycolor-900 border-gray-700' : 'bg-white border-gray-200'} border-b flex items-center justify-between px-6`}>
+      {/* Left Section */}
+      <div className="flex items-center space-x-4">
+        {/* Mobile Menu Button */}
+        <button
+          onClick={onMenuClick}
+          className={`lg:hidden p-2 rounded-md ${isDark ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-900'}`}
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        
+        {/* Search Section */}
+        <div className="flex-1 max-w-md">
+        <form onSubmit={handleSearchSubmit} className="relative">
+          <div className="relative">
+            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+            <input
+              type="text"
+              placeholder="Search item"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${isDark ? 'bg-primarycolor-900 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
+            />
+          </div>
+        </form>
+        </div>
+      </div>
+
+      {/* Right Section */}
+      <div className="flex items-center space-x-4">
+        
+        {/* Notifications */}
+        <button
+          onClick={onNotificationClick}
+          className={`relative p-2 transition-colors ${isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'}`}
+        >
+          <Bell className="w-5 h-5" />
+          {notificationCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {notificationCount}
+            </span>
+          )}
+        </button>
+        {/* Theme */}
+        <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-xl transition-colors ${isDark ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-200'}`}
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+        {/* User Profile Dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className={`flex items-center space-x-3 p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50'}`}
+          >
+            {/* User Avatar */}
+            <div className="w-8 h-8 rounded-full overflow-hidden bg-blue-500 flex items-center justify-center">
+              {authUser.avatar ? (
+                <img
+                  src={authUser.avatar}
+                  alt={userName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-white text-sm font-medium">
+                  {getInitials(userName)}
+                </span>
+              )}
+            </div>
+            
+            {/* User Info */}
+            <div className="text-left">
+              <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{userName}</p>
+              <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{capitalizeRole(authUser?.role)}</p>
+            </div>
+            
+            {/* Dropdown Arrow */}
+            <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''} ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
+          </button>
+
+          {/* Dropdown Menu */}
+          {isDropdownOpen && (
+            <div className={`absolute right-0 top-full mt-2 w-48 rounded-lg shadow-lg py-2 z-50 ${isDark ? 'bg-primarycolor-900 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+              <div className={`px-4 py-2 border-b ${isDark ? 'border-gray-700' : 'border-gray-100'}`}>
+                <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{userName}</p>
+                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{authUser.email}</p>
+              </div>
+              
+              <Link to="/profile">
+              <button className={`w-full px-4 py-2 text-left text-sm flex items-center space-x-2 ${isDark ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'}`}>
+                <User className="w-4 h-4" />
+                <span>Profile</span>
+              </button>
+              </Link>
+              
+              <button className={`w-full px-4 py-2 text-left text-sm flex items-center space-x-2 ${isDark ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'}`}>
+                <Settings className="w-4 h-4" />
+                <span>Settings</span>
+              </button>
+              
+              <div className={`border-t my-1 ${isDark ? 'border-gray-700' : 'border-gray-100'}`}></div>
+              
+              {/* <button
+                onClick={logout}
+                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </button> */}
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
