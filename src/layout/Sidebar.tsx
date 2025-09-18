@@ -68,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole = ['student'], isOpen = true
         <>
             {/* Mobile Overlay */}
             {/* Sidebar */}
-            <div className={`fixed lg:static inset-y-0 left-0 z-50 ${isOpen ? 'w-64 sm:w-60 md:w-64' : 'lg:w-20'} h-screen ${isDark ? 'bg-primarycolor-900 border-gray-700' : 'bg-white border-gray-200'} border-r flex flex-col transform transition-all duration-300 ease-in-out ${
+            <div className={`fixed lg:static inset-y-0 left-0 z-50 ${isOpen ? 'w-64 sm:w-60 md:w-68' : 'lg:w-20'} h-screen ${isDark ? 'bg-primarycolor-900 border-gray-700' : 'bg-white border-gray-200'} border-r flex flex-col transform transition-all duration-300 ease-in-out ${
                 isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
             }`}>
                 {/* Logo & Hamburger Section */}

@@ -17,7 +17,8 @@ import {
     DollarSign,
     Star,
     CheckSquare,
-    ClipboardList
+    ClipboardList,
+    Bot
 } from "lucide-react";
 import type{ SidebarLink } from '@/types/index';
 
@@ -40,11 +41,23 @@ export const STUDENT_SIDEBAR_LINKS: SidebarLink[] = [
         path:'/applications',
         icon:<FileText size={20} strokeWidth={2.5} />
     },
+    // {
+    //     key:'guidance',
+    //     label:'Career Guidance',
+    //     path:'/guidance',
+    //     icon:<Sparkle size={20} strokeWidth={2.5}/>
+    // },
     {
         key:'guidance',
-        label:'AI Guidance',
+        label:'Career Guidance',
         path:'/guidance',
         icon:<Sparkle size={20} strokeWidth={2.5}/>
+    },
+    {
+        key: 'chat',
+        label: 'ChatBot',
+        path: '/chatbot',
+        icon: <Bot size={20} strokeWidth={2.5} />
     },
 ];
 
@@ -229,12 +242,7 @@ export const RECRUITER_SIDEBAR_LINKS: SidebarLink[] = [
 ];
 
 export const SIDEBAR_BOTTOM_LINKS: SidebarLink[] = [
-    {
-        key: 'help',
-        label: 'Help',
-        path: '/help',
-        icon: <HelpCircle size={20} strokeWidth={2.5} />
-    },
+    
     {
         key: 'logout',
         label: 'Logout',

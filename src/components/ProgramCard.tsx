@@ -13,6 +13,10 @@ interface Program {
   timeToClose: string;
   status: 'Open' | 'Closed';
   isUrgent?: boolean;
+  duration?: string;
+  level?: string;
+  language?: string;
+  description?: string;
 }
 
 interface ProgramCardProps {
@@ -40,45 +44,86 @@ const ProgramCard: React.FC<ProgramCardProps> = ({ program, onApply }) => {
       isDark ? 'bg-primarycolor-900 border-gray-700' : 'bg-white border-gray-200'
     }`}>
       <div className="flex justify-between items-start mb-3">
-        <div>
-          <h3 className={`text-base font-semibold mb-1 ${
+        <div className="flex-1">
+          <h3 className={`text-base font-semibold mb-1 line-clamp-2 ${
             isDark ? 'text-primarycolor-400' : 'text-primarycolor-600'
           }`}>
             {program.title}
           </h3>
-          <p className={`text-sm font-medium ${
+          <p className={`text-sm font-medium mb-1 ${
             isDark ? 'text-white' : 'text-gray-900'
           }`}>
             {program.institution}
           </p>
+          {program.description && (
+            <p className={`text-xs line-clamp-2 ${
+              isDark ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              {program.description}
+            </p>
+          )}
         </div>
-        <span className={`px-2 py-1 rounded-full text-white text-xs ${getStatusColor()}`}>
+        <span className={`px-2 py-1 rounded-full text-white text-xs ml-2 ${getStatusColor()}`}>
           {program.status}
         </span>
       </div>
 
       <div className="space-y-2 mb-4">
-        <div className="flex items-center space-x-2">
-          <MapPin className={`w-4 h-4 ${isDark ? 'text-secondarycolor-400' : 'text-secondarycolor-600'}`} />
-          <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-            {program.location}
-          </span>
-          <Users className={`w-4 h-4 ml-4 ${isDark ? 'text-primarycolor-400' : 'text-primarycolor-600'}`} />
-          <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-            {program.seatsRemain} seats remain
-          </span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <MapPin className={`w-4 h-4 ${isDark ? 'text-secondarycolor-400' : 'text-secondarycolor-600'}`} />
+            <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+              {program.location}
+            </span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Users className={`w-4 h-4 ${isDark ? 'text-primarycolor-400' : 'text-primarycolor-600'}`} />
+            <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+              {program.seatsRemain} seats
+            </span>
+          </div>
         </div>
         
-        <div className="flex items-center space-x-2">
-          <Calendar className={`w-4 h-4 ${isDark ? 'text-secondarycolor-400' : 'text-secondarycolor-600'}`} />
-          <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-            {program.deadline}
-          </span>
-          <Clock className={`w-4 h-4 ml-4 ${getTimeColor()}`} />
-          <span className={`text-sm ${getTimeColor()}`}>
-            {program.timeToClose}
-          </span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Calendar className={`w-4 h-4 ${isDark ? 'text-secondarycolor-400' : 'text-secondarycolor-600'}`} />
+            <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+              {program.deadline}
+            </span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Clock className={`w-4 h-4 ${getTimeColor()}`} />
+            <span className={`text-sm ${getTimeColor()}`}>
+              {program.timeToClose}
+            </span>
+          </div>
         </div>
+        
+        {(program.duration || program.level || program.language) && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {program.duration && (
+              <span className={`px-2 py-1 rounded text-xs ${
+                isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+              }`}>
+                {program.duration}
+              </span>
+            )}
+            {program.level && (
+              <span className={`px-2 py-1 rounded text-xs ${
+                isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+              }`}>
+                {program.level}
+              </span>
+            )}
+            {program.language && (
+              <span className={`px-2 py-1 rounded text-xs ${
+                isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+              }`}>
+                {program.language}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="flex space-x-2">

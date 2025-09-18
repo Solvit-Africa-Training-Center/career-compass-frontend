@@ -5,6 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -25,6 +26,10 @@ interface Program {
   timeToClose: string;
   status: 'Open' | 'Closed';
   isUrgent?: boolean;
+  duration?: string;
+  level?: string;
+  language?: string;
+  description?: string;
 }
 
 interface BackendProgram {
@@ -91,7 +96,11 @@ const transformBackendProgram = (backendProgram: BackendProgram): Program => {
     deadline: deadline.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
     timeToClose,
     status,
-    isUrgent
+    isUrgent,
+    duration: backendProgram.duration,
+    level: backendProgram.level,
+    language: backendProgram.language,
+    description: backendProgram.description
   };
 };
 
@@ -263,20 +272,69 @@ const ProgramsList: React.FC<ProgramsListProps> = ({
               />
             </PaginationItem>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <PaginationItem key={page}>
-                <PaginationLink
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentPage(page);
-                  }}
-                  isActive={currentPage === page}
-                >
-                  {page}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
+            {/* First page */}
+            {currentPage > 3 && (
+              <>
+                <PaginationItem>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(1);
+                    }}
+                  >
+                    1
+                  </PaginationLink>
+                </PaginationItem>
+                {currentPage > 4 && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+              </>
+            )}
+
+            {/* Current page and neighbors */}
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const page = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+              if (page > totalPages) return null;
+              return (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(page);
+                    }}
+                    isActive={currentPage === page}
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              );
+            })}
+
+            {/* Last page */}
+            {currentPage < totalPages - 2 && (
+              <>
+                {currentPage < totalPages - 3 && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+                <PaginationItem>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(totalPages);
+                    }}
+                  >
+                    {totalPages}
+                  </PaginationLink>
+                </PaginationItem>
+              </>
+            )}
 
             <PaginationItem>
               <PaginationNext
