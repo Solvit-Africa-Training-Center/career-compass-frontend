@@ -3,10 +3,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/Button";
 import { useTheme } from "@/hooks/useTheme";
+import { useAuth } from "@/hooks/useAuth";
 
 const navigation = {
   home: "Home",
   features: "Features",
+  dashboard: "Dashboard",
   about: "About",
   howItWorks: "How It Works",
   contact: "Contact Us",
@@ -14,12 +16,17 @@ const navigation = {
 
 const NavBar = () => {
     const { isDark,toggleTheme } = useTheme();
+  const { authUser } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+    if (sectionId === 'dashboard') {
+      navigate('/dashboard');
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
     }
     setIsOpen(false);
   };
@@ -47,12 +54,21 @@ const NavBar = () => {
                 </li>
               ))}
             </ul>
-            <Button
-              className="bg-primarycolor-500 hover:bg-primarycolor-400 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </Button>
+            {authUser ? (
+              <Button
+                className="bg-primarycolor-500 hover:bg-primarycolor-400 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
+                onClick={() => navigate("/dashboard")}
+              >
+                Dashboard
+              </Button>
+            ) : (
+              <Button
+                className="bg-primarycolor-500 hover:bg-primarycolor-400 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </Button>
+            )}
             <button
               onClick={toggleTheme}
               className={`p-2 rounded-xl transition-colors ${isDark ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-200'}`}
@@ -124,12 +140,21 @@ const NavBar = () => {
               
             </ul>
             <div className="px-4 pb-4">
-              <Button
-                className="w-full bg-primarycolor-500 hover:bg-primarycolor-400 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
-                onClick={() => navigate("/login")}
-              >
-                Login
-              </Button>
+              {authUser ? (
+                <Button
+                  className="w-full bg-primarycolor-500 hover:bg-primarycolor-400 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
+                  onClick={() => navigate("/dashboard")}
+                >
+                  Dashboard
+                </Button>
+              ) : (
+                <Button
+                  className="w-full bg-primarycolor-500 hover:bg-primarycolor-400 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
+                  onClick={() => navigate("/login")}
+                >
+                  Login
+                </Button>
+              )}
             </div>
           </div>
         )}
