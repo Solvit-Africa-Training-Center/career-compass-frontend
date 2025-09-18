@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type{ ProfileFormData } from '@/types/';
 
 interface PersonalInformationFormProps {
@@ -13,16 +13,33 @@ const PersonalInformationForm: React.FC<PersonalInformationFormProps> = ({
   onBack
 }) => {
   const [formData, setFormData] = useState<ProfileFormData>({
-    first_name: initialData?.first_name || 'Bryan',
-    last_name: initialData?.last_name || 'Mike',
-    email: initialData?.email || 'bryan@example.com',
-    age: initialData?.age || 19,
-    birth_date: initialData?.birth_date || '21/04/2007',
-    language: initialData?.language || 'Kinyarwanda',
+    first_name: initialData?.first_name || '',
+    last_name: initialData?.last_name || '',
+    email: initialData?.email || '',
+    age: initialData?.age || 0,
+    birth_date: initialData?.birth_date || '',
+    phone_number: initialData?.phone_number || '',
     gender: initialData?.gender || 'M',
     country: initialData?.country || '',
     city: initialData?.city || ''
   });
+
+  // Update form data when initialData changes
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        first_name: initialData.first_name || '',
+        last_name: initialData.last_name || '',
+        email: initialData.email || '',
+        age: initialData.age || 0,
+        birth_date: initialData.birth_date || '',
+        phone_number: initialData.phone_number || '',
+        gender: initialData.gender || 'M',
+        country: initialData.country || '',
+        city: initialData.city || ''
+      });
+    }
+  }, [initialData]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -40,12 +57,7 @@ const PersonalInformationForm: React.FC<PersonalInformationFormProps> = ({
     { id: 'ruhengeri', name: 'Ruhengeri' }
   ];
 
-  const languages = [
-    'Kinyarwanda',
-    'English',
-    'French',
-    'Swahili'
-  ];
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -139,7 +151,7 @@ const PersonalInformationForm: React.FC<PersonalInformationFormProps> = ({
                 value={formData.first_name}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
-                placeholder="Bryan"
+                placeholder="Enter first name"
               />
             </div>
             <div>
@@ -152,7 +164,7 @@ const PersonalInformationForm: React.FC<PersonalInformationFormProps> = ({
                 value={formData.last_name}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
-                placeholder="Mike"
+                placeholder="Enter last name"
               />
             </div>
           </div>
@@ -169,7 +181,7 @@ const PersonalInformationForm: React.FC<PersonalInformationFormProps> = ({
                 value={formData.email}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
-                placeholder="bryan@example.com"
+                placeholder="Enter email"
               />
             </div>
             <div>
@@ -182,12 +194,12 @@ const PersonalInformationForm: React.FC<PersonalInformationFormProps> = ({
                 value={formData.age}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
-                placeholder="19"
+                placeholder="Enter age"
               />
             </div>
           </div>
 
-          {/* Date of Birth and Language Row */}
+          {/* Date of Birth and Phone Number Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -195,32 +207,26 @@ const PersonalInformationForm: React.FC<PersonalInformationFormProps> = ({
               </label>
               <div className="relative">
                 <input
-                  type="text"
+                  type="date"
                   name="birth_date"
                   value={formData.birth_date}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
-                  placeholder="21/04/2007"
                 />
-                <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Language
+                Phone Number
               </label>
-              <select
-                name="language"
-                value={formData.language}
+              <input
+                type="tel"
+                name="phone_number"
+                value={formData.phone_number}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent appearance-none bg-white"
-              >
-                {languages.map((lang) => (
-                  <option key={lang} value={lang}>{lang}</option>
-                ))}
-              </select>
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent"
+                placeholder="Enter phone number"
+              />
             </div>
           </div>
 

@@ -3,7 +3,7 @@ import { ApplicationTable, type Application } from "@/components/TableComp";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { useState, useEffect } from "react";
-import CallApi from "@/utils/CallApi";
+import CallApi from "@/utils/callApi";
 import { backend_path } from "@/utils/enum";
 import { toast } from "sonner";
 

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, Clock, Check } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import CallApi from "@/utils/CallApi";
+import CallApi from "@/utils/callApi";
 import { backend_path } from "@/utils/enum";
 import { toast } from "sonner";
 import { useTheme } from "@/hooks/useTheme";

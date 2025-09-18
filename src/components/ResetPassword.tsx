@@ -1,28 +1,44 @@
 import React, { useState } from 'react';
 import { Input } from './ui/Input';
-import type { User } from '@/types';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { useAuth } from '@/hooks/useAuth';
 
 const ResetPassword = () => {
     const [formData, setFormData] = useState({
-        email:"",
-        password:"",
+        old_password: "",
+        new_password: "",
+        confirm_password: ""
       })
-      const [showPassword, setShowPassword] = useState(false)
-      const {loading}=useAuth()
-      const handleChange=(
-        e: React.ChangeEvent<HTMLInputElement>,
-        field: keyof User
-      ) => {
-        const { value } = e.target;
-        setFormData((prev) => ({ ...prev, [field]: value }));
+      const [showOldPassword, setShowOldPassword] = useState(false)
+      const [showNewPassword, setShowNewPassword] = useState(false)
+      const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+      const { loading, changePassword } = useAuth()
+      
+      const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
       };
-      const handleSubmit = (e: React.FormEvent) => {
+      
+      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault();
-        //   login(formData)
-          console.log("Login form submitted");
+          
+          if (formData.new_password !== formData.confirm_password) {
+            alert("New passwords don't match!");
+            return;
+          }
+          
+          await changePassword({
+            old_password: formData.old_password,
+            new_password: formData.new_password
+          });
+          
+          // Reset form on success
+          setFormData({
+            old_password: "",
+            new_password: "",
+            confirm_password: ""
+          });
         };
   return (
     <>
@@ -32,37 +48,58 @@ const ResetPassword = () => {
             <div className="relative">
             <label className="block text-sm font-medium mb-2 text-gray-700">Old Password</label>
             <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={(e) => handleChange(e, "password")}
+              type={showOldPassword ? "text" : "password"}
+              name="old_password"
+              placeholder="Enter your current password"
+              value={formData.old_password}
+              onChange={handleChange}
               className="h-12 text-base pr-12"
               required
             />
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={() => setShowOldPassword(!showOldPassword)}
               className="absolute right-3 top-11 text-gray-500 hover:text-gray-700"
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              {showOldPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
           <div className="relative">
             <label className="block text-sm font-medium mb-2 text-gray-700">New Password</label>
             <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={(e) => handleChange(e, "password")}
+              type={showNewPassword ? "text" : "password"}
+              name="new_password"
+              placeholder="Enter your new password"
+              value={formData.new_password}
+              onChange={handleChange}
               className="h-12 text-base pr-12"
               required
             />
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={() => setShowNewPassword(!showNewPassword)}
               className="absolute right-3 top-11 text-gray-500 hover:text-gray-700"
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+          <div className="relative">
+            <label className="block text-sm font-medium mb-2 text-gray-700">Confirm New Password</label>
+            <Input
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirm_password"
+              placeholder="Confirm your new password"
+              value={formData.confirm_password}
+              onChange={handleChange}
+              className="h-12 text-base pr-12"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-11 text-gray-500 hover:text-gray-700"
+            >
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
           <Button
@@ -72,11 +109,11 @@ const ResetPassword = () => {
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-12 w-12 animate-spin" />
-                
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Changing...
               </>
             ) : (
-              "Reset"
+              "Change Password"
             )}
           </Button>
         </form>

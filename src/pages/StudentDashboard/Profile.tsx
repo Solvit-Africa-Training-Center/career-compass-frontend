@@ -2,22 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ProfileFormData } from '@/types/';
 import ProfileSidebar from '@/components/ProfileSidebar';
-import PersonalInformationForm from '@/components/PersonalInformationForm';
+import ProfileCard from '@/components/ProfileCard';
+import EditProfileModal from '@/components/EditProfileModal';
 import ResetPassword from '@/components/ResetPassword';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
 
 const Profile: React.FC = () => {
   const [activeTab, setActiveTab] = useState('personal');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const navigate = useNavigate();
-  const { authUser, fetchProfile, updateProfile, createProfile, profile } = useAuth();
+  const { authUser, fetchProfile, updateProfile, createProfile, profile, loading } = useAuth();
   const [profileData, setProfileData] = useState<ProfileFormData>({
     first_name: '',
     last_name: '',
     email: authUser?.email || '',
     age: 0,
     birth_date: '',
-    language: '',
+    phone_number: '',
     gender: 'M',
     country: '',
     city: ''
@@ -27,54 +28,55 @@ const Profile: React.FC = () => {
     const loadProfile = async () => {
       if (!authUser) return;
       
-      try {
-        const existingProfile = await fetchProfile();
-        if (existingProfile) {
-          setProfileData({
-            first_name: existingProfile.first_name || '',
-            last_name: existingProfile.last_name || '',
-            email: authUser.email,
-            age: 0, // Calculate from birth_date if needed
-            birth_date: existingProfile.birth_date || '',
-            language: existingProfile.language || '',
-            gender: existingProfile.gender || 'M',
-            country: existingProfile.country || '',
-            city: existingProfile.city || ''
-          });
+      if (!profile) {
+        try {
+          await fetchProfile();
+        } catch (err) {
+          console.error('Failed to load profile data:', err);
         }
-      } catch (err) {
-        toast.error('Failed to load profile data');
       }
     };
     loadProfile();
-  }, [authUser, fetchProfile]);
+  }, [authUser]);
+
+  useEffect(() => {
+    if (profile) {
+      setProfileData({
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        email: authUser?.email || '',
+        age: 0, // Calculate from birth_date if needed
+        birth_date: profile.birth_date || '',
+        phone_number: profile.phone_number || '',
+        gender: profile.gender || 'M',
+        country: profile.country || '',
+        city: profile.city || ''
+      });
+    } else if (authUser) {
+      setProfileData(prev => ({
+        ...prev,
+        email: authUser.email
+      }));
+    }
+  }, [profile, authUser]);
 
   const handleSave = async (data: ProfileFormData) => {
-    try {
-      const profileData = {
-        first_name: data.first_name,
-        last_name: data.last_name,
-        birth_date: data.birth_date,
-        gender: data.gender,
-        country: data.country,
-        city: data.city,
-        // Handle avatar upload separately if needed
-      };
-      
-      if (profile) {
-        // Update existing profile
-        await updateProfile(profileData);
-        toast.success('Profile updated successfully');
-      } else {
-        // Create new profile
-        await createProfile(data);
-        toast.success('Profile created successfully');
-      }
-    } catch (err) {
-      const action = profile ? 'update' : 'create';
-      toast.error(`Failed to ${action} profile`);
-      console.error('Profile error:', err);
+    const profileData = {
+      first_name: data.first_name,
+      last_name: data.last_name,
+      birth_date: data.birth_date,
+      gender: data.gender,
+      country: data.country,
+      city: data.city,
+      phone_number: data.phone_number,
+    };
+    
+    if (profile) {
+      await updateProfile(profileData);
+    } else {
+      await createProfile(data);
     }
+    setIsEditModalOpen(false);
   };
 
   const handleBackToDashboard = () => {
@@ -85,11 +87,23 @@ const Profile: React.FC = () => {
     switch (activeTab) {
       case 'personal':
         return (
-          <PersonalInformationForm
-            initialData={profileData}
-            onSave={handleSave}
-            onBack={handleBackToDashboard}
-          />
+          <div className="flex-1 bg-gray-50 p-8">
+            <div className="max-w-4xl mx-auto">
+              <ProfileCard 
+                profile={profile}
+                email={authUser?.email || ''}
+                onEdit={() => setIsEditModalOpen(true)}
+              />
+              <div className="mt-6">
+                <button
+                  onClick={handleBackToDashboard}
+                  className="w-full border-2 border-primarycolor-600 text-primarycolor-600 py-3 rounded-lg font-medium hover:bg-primarycolor-50 transition-colors"
+                >
+                  BACK TO DASHBOARD
+                </button>
+              </div>
+            </div>
+          </div>
         );
       case 'password':
         return (
@@ -120,6 +134,14 @@ const Profile: React.FC = () => {
         onTabChange={setActiveTab} 
       />
       {renderContent()}
+      
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSave}
+        initialData={profileData}
+        loading={loading}
+      />
     </div>
   );
 };

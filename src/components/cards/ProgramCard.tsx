@@ -19,7 +19,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
   cardColor,
   buttonStyle,
 }) => {
-  const {isDark}=useTheme()
+  // const {isDark}=useTheme()
   return (
     <div
       className={`rounded-xl shadow-md p-8 text-center flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${cardColor}`}

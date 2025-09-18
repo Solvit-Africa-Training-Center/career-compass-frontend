@@ -1,6 +1,5 @@
 import { useTheme } from '@/hooks/useTheme';
 import {  BookOpen } from 'lucide-react';
-import React from 'react';
 
 const Footer = () => {
   const {isDark}=useTheme()
