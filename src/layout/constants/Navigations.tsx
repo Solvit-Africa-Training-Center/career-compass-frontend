@@ -1,5 +1,4 @@
-import { 
-    HelpCircle, 
+import {  
     LayoutDashboard, 
     LogOut,
     Settings, 

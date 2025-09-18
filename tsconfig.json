@@ -11,6 +11,9 @@
   "compilerOptions": {
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "jsx": "react-jsx",
+    "target": "ES2020",
+    "lib": ["DOM", "DOM.Iterable", "ES6"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
