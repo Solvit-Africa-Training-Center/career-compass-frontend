@@ -23,7 +23,8 @@ import ProgramRequirements from "@/pages/AdminDashboard/ProgramRequirements";
 import AdmissionRequirements from "@/pages/AdminDashboard/AdmissionRequirements";
 import InstitutionDashboard from "@/pages/InstitutionDashboard/InstitutionDashboard";
 import AdminAnalytics from "@/pages/AdminDashboard/AdminAnalytics";
-
+import { CareerGuidance } from "@/components/career-guidance";
+import Chatbot from "@/components/Chatbot";
 const AppRoute: React.FC = () => {
   const { authUser } = useAuth();
   const isAuthenticated = !!authUser;
@@ -86,18 +87,20 @@ const AppRoute: React.FC = () => {
               path="/guidance"
               element={
                 <Layout>
-                  <div className="space-y-6">
-                    <h1 className="text-2xl font-bold text-gray-900">
-                      AI Guidance
-                    </h1>
-                    <div className="bg-white p-6 rounded-lg shadow">
-                      <p>Get AI-powered career guidance</p>
-                    </div>
-                  </div>
+                  <CareerGuidance />
                 </Layout>
               }
             />
             <Route
+              path="/chatbot"
+              element={
+                <Layout>
+                  <Chatbot />
+                </Layout>
+              }
+            />
+
+              <Route
               path="/profile"
               element={
                 <Layout>
