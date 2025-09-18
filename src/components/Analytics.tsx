@@ -3,7 +3,7 @@ import StatCard from '@/components/cards/StatCard';
 import DeadlineCard from './DeadlineCard';
 import type { AnalyticsProps, StatCardData, DeadlineItem } from '@/types/';
 import { useTheme } from '@/hooks/useTheme';
-import CallApi from '@/utils/CallApi';
+import CallApi from '@/utils/callApi';
 import { backend_path } from '@/utils/enum';
 
 // Default data for the first dashboard

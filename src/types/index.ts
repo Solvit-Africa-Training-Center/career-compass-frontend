@@ -38,7 +38,7 @@ export interface ProfileFormData {
   email: string;
   age: number;
   birth_date: string;
-  language: string;
+  phone_number: string;
   gender: 'M' | 'F';
   country: string;
   city: string;

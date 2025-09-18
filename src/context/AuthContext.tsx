@@ -243,21 +243,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch profile for the signed-in user
   const fetchProfile = async () => {
-    if (!authUser || loading) {
+    if (!authUser) {
       return null;
     }
     try {
-      setLoading(true);
-      const res = await CallApi.get(`${backend_path.GET_USER_BY_ID}?user=${authUser.id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
-      });
-      setProfile(res.data);
-      return res.data;
-    } catch (err: unknown) {
-      // toast.error(getErrorMessage(err, "fetch_profile"));
+      const res = await CallApi.get(`${backend_path.GET_USER_PROFILE}?user=${authUser.id}`);
+      console.log('Profile API response:', res.data);
+      
+      if (res.data) {
+        // Handle both array and single object responses
+        if (Array.isArray(res.data)) {
+          // Filter profiles for current user
+          const userProfile = res.data.find(profile => profile.user === authUser.id);
+          if (userProfile) {
+            setProfile(userProfile);
+            return userProfile;
+          }
+        } else if (res.data.user === authUser.id) {
+          // Single profile object
+          setProfile(res.data);
+          return res.data;
+        }
+      }
+      
+      setProfile(null);
       return null;
-    } finally {
-      setLoading(false);
+    } catch (err: unknown) {
+      console.error('Fetch profile error:', err);
+      setProfile(null);
+      return null;
     }
   };
 //create profile
@@ -267,7 +281,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     try {
       setLoading(true);
-      const res = await CallApi.post(backend_path.ADD_USER_PROFILE, data);
+      const profileData = {
+        user: authUser.id,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        birth_date: data.birth_date,
+        gender: data.gender,
+        country: data.country,
+        city: data.city,
+        phone_number: data.phone_number,
+      };
+      const res = await CallApi.post(backend_path.ADD_USER_PROFILE, profileData);
       setProfile(res.data);
       toast.success("Profile created successfully!");
     } catch (err: unknown) {
@@ -278,12 +302,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 // Update profile
   const updateProfile = async (data: Partial<Profile>) => {
-    if (!authUser) {
+    if (!authUser || !profile) {
       return;
     }
     try {
       setLoading(true);
-      const res = await CallApi.put(`${backend_path.UPDATE_PROFILE}${authUser.id}/`, data);
+      const res = await CallApi.put(`${backend_path.UPDATE_PROFILE}${profile.id}/`, data);
       setProfile(res.data);
       toast.success("Profile updated successfully!");
     } catch (err: unknown) {
@@ -295,7 +319,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 // Fetch profile when user logs in
   useEffect(() => {
-    if (authUser) {
+    if (authUser && !profile) {
       fetchProfile();
     }
   }, [authUser]);
@@ -416,6 +440,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Change Password
+  const changePassword = async (data: { old_password: string; new_password: string }) => {
+    try {
+      setLoading(true);
+      await CallApi.post(backend_path.CHANGE_PASSWORD, data);
+      toast.success("Password changed successfully!");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "change_password"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Storage Restoration
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -442,6 +479,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         assignRole,
         removeRole,
         getRoles,
+        changePassword,
         profile
       }}
     >

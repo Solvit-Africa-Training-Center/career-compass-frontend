@@ -11,7 +11,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { ProgramsDashboardAnalytics } from './Analytics';
-import CallApi from '@/utils/CallApi';
+import CallApi from '@/utils/callApi';
 import { backend_path } from '@/utils/enum';
 import { toast } from 'sonner';
 
