@@ -15,11 +15,11 @@ const Header: React.FC<HeaderProps> = ({
   onNotificationClick,
   onMenuClick
 }) => {
-  const { authUser, logout } = useAuth();
+  const { authUser} = useAuth();
   const { isDark,toggleTheme } = useTheme();
     const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [notificationCount] = useState(3);
+  // const [notificationCount] = useState(3);
   const dropdownRef = useRef<HTMLDivElement>(null);
 // Close dropdown when clicking outside
   useEffect(() => {
@@ -103,7 +103,7 @@ const Header: React.FC<HeaderProps> = ({
       <div className="flex items-center space-x-4">
         
         {/* Notifications */}
-        <button
+        {/* <button
           onClick={onNotificationClick}
           className={`relative p-2 transition-colors ${isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'}`}
         >
@@ -113,7 +113,7 @@ const Header: React.FC<HeaderProps> = ({
               {notificationCount}
             </span>
           )}
-        </button>
+        </button> */}
         {/* Theme */}
         <button
               onClick={toggleTheme}
