@@ -17,7 +17,8 @@ import {
     Star,
     CheckSquare,
     ClipboardList,
-    Bot
+    Bot,
+    CalendarDays
 } from "lucide-react";
 import type{ SidebarLink } from '@/types/index';
 
@@ -69,9 +70,15 @@ export const ADMIN_SIDEBAR_LINKS: SidebarLink[] = [
     },
     {
         key:'users',
-        label:'User Management',
+        label:'Users',
         path:'/admin/users',
         icon:<Users size={20} strokeWidth={2.5}/>
+    },
+    {
+        key:'students',
+        label:'Students',
+        path:'/admin/students',
+        icon:<UserCheck size={20} strokeWidth={2.5}/>
     },
     {
         key:'institutions',
@@ -103,15 +110,21 @@ export const ADMIN_SIDEBAR_LINKS: SidebarLink[] = [
         path:'/admin/program-features',
         icon:<Star size={20} strokeWidth={2.5}/>
     },
+    // {
+    //     key:'program-requirements',
+    //     label:'Program Requirements',
+    //     path:'/admin/program-requirements',
+    //     icon:<CheckSquare size={20} strokeWidth={2.5}/>
+    // },
     {
-        key:'program-requirements',
-        label:'Program Requirements',
-        path:'/admin/program-requirements',
-        icon:<CheckSquare size={20} strokeWidth={2.5}/>
+        key:'program-intakes',
+        label:'Program Intakes',
+        path:'/admin/program-intakes',
+        icon:<CalendarDays size={20} strokeWidth={2.5}/>
     },
     {
         key:'admission-requirements',
-        label:'Admission Requirements',
+        label:'Admission',
         path:'/admin/admission-requirements',
         icon:<ClipboardList size={20} strokeWidth={2.5}/>
     },

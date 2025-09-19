@@ -21,10 +21,12 @@ import ProgramFees from "@/pages/AdminDashboard/ProgramFees";
 import ProgramFeatures from "@/pages/AdminDashboard/ProgramFeatures";
 import ProgramRequirements from "@/pages/AdminDashboard/ProgramRequirements";
 import AdmissionRequirements from "@/pages/AdminDashboard/AdmissionRequirements";
-import InstitutionDashboard from "@/pages/InstitutionDashboard/InstitutionDashboard";
+// import InstitutionDashboard from "@/pages/InstitutionDashboard/InstitutionDashboard";
 import AdminAnalytics from "@/pages/AdminDashboard/AdminAnalytics";
+import Students from "@/pages/AdminDashboard/Students";
 import { CareerGuidance } from "@/components/career-guidance";
 import Chatbot from "@/components/Chatbot";
+import ProgramIntake from "@/pages/AdminDashboard/ProgramIntake";
 const AppRoute: React.FC = () => {
   const { authUser } = useAuth();
   const isAuthenticated = !!authUser;
@@ -126,6 +128,14 @@ const AppRoute: React.FC = () => {
               }
             />
             <Route
+              path="/admin/students"
+              element={
+                <Layout>
+                  <Students />
+                </Layout>
+              }
+            />
+            <Route
               path="/admin/institutions"
               element={
                 <Layout>
@@ -166,13 +176,21 @@ const AppRoute: React.FC = () => {
               }
             />
             <Route
+              path="/admin/program-intakes"
+              element={
+                <Layout>
+                  <ProgramIntake />
+                </Layout>
+              }
+            />
+            {/* <Route
               path="/admin/program-requirements"
               element={
                 <Layout>
                   <ProgramRequirements />
                 </Layout>
               }
-            />
+            /> */}
             <Route
               path="/admin/admission-requirements"
               element={

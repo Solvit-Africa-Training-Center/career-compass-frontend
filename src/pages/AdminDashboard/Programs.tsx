@@ -194,7 +194,7 @@ const Programs = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-primarycolor-500">Programs Management</h1>
+        <h1 className="text-2xl font-bold text-primarycolor-500">Programs</h1>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="bg-primarycolor-500 hover:bg-primarycolor-600 text-white">

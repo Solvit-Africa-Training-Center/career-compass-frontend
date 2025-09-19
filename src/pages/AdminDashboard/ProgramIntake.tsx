@@ -18,15 +18,13 @@ import CallApi from '@/utils/callApi';
 import { backend_path } from '@/utils/enum';
 import { toast } from 'sonner';
 
-interface ProgramFee {
-  id: number;
-  tuition_fee: number;
-  tuition_amount: string;
-  tuition_currency: string;
-  application_fee_amount: string;
-  deposit_amount: string;
-  has_scholarship: boolean;
-  scholarship_percent: string;
+interface ProgramIntake {
+  id: string;
+  program_id: string;
+  start_month: string;
+  application_deadline: string;
+  seats: number;
+  is_open: boolean;
   is_active: boolean;
   program: string;
 }
@@ -42,45 +40,43 @@ interface Program {
   language: string;
 }
 
-const ProgramFees = () => {
-  const [fees, setFees] = useState<ProgramFee[]>([]);
+const ProgramIntake = () => {
+  const [intakes, setIntakes] = useState<ProgramIntake[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(false);
   const [programsLoading, setProgramsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [selectedFee, setSelectedFee] = useState<ProgramFee | null>(null);
+  const [selectedIntake, setSelectedIntake] = useState<ProgramIntake | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [formData, setFormData] = useState({
-    program: '',
-    tuition_amount: '',
-    tuition_currency: 'RWF',
-    application_fee_amount: '',
-    deposit_amount: '',
-    has_scholarship: false,
-    scholarship_percent: '',
+    program_id: '',
+    start_month: '',
+    application_deadline: '',
+    seats: '',
+    is_open: true,
     is_active: true
   });
 
-  const fetchFees = async () => {
+  const fetchIntakes = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
-      const res = await CallApi.get(backend_path.GET_PROGRAM_FEE, {
+      const res = await CallApi.get(backend_path.GET_PROGRAM_INTAKE, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('Fees API response:', res.data);
-      setFees(res.data || []);
+      console.log('Intakes API response:', res.data);
+      setIntakes(res.data || []);
     } catch (error: unknown) {
       const errorResponse = error as { response?: { status?: number } };
       if (errorResponse?.response?.status === 404) {
-        toast.error('Program fees endpoint not available.');
+        toast.error('Program intakes endpoint not available.');
       } else {
-        toast.error('Failed to fetch program fees');
+        toast.error('Failed to fetch program intakes');
       }
-      setFees([]);
+      setIntakes([]);
     } finally {
       setLoading(false);
     }
@@ -104,134 +100,156 @@ const ProgramFees = () => {
     }
   };
 
-  const handleAddFee = async () => {
-    if (!formData.program) {
+  const handleAddIntake = async () => {
+    if (!formData.program_id) {
       toast.error('Please select a program');
+      return;
+    }
+    if (!formData.start_month) {
+      toast.error('Please enter start month');
+      return;
+    }
+    if (!formData.application_deadline) {
+      toast.error('Please enter application deadline');
+      return;
+    }
+    if (!formData.seats || parseInt(formData.seats) <= 0) {
+      toast.error('Please enter valid number of seats');
       return;
     }
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
       const payload = {
-        program: formData.program,
-        tuition_amount: formData.tuition_amount,
-        tuition_currency: formData.tuition_currency,
-        application_fee_amount: formData.application_fee_amount,
-        deposit_amount: formData.deposit_amount,
-        has_scholarship: formData.has_scholarship,
-        scholarship_percent: formData.scholarship_percent,
+        program_id: formData.program_id,
+        start_month: formData.start_month,
+        application_deadline: formData.application_deadline,
+        seats: parseInt(formData.seats),
+        is_open: formData.is_open,
         is_active: formData.is_active
       };
-      console.log('Sending program fee data:', payload);
-      await CallApi.post(backend_path.ADD_PROGRAM_FEE, payload, {
+      console.log('Sending program intake data:', payload);
+      await CallApi.post(backend_path.ADD_PROGRAM_INTAKE, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success('Program fee added successfully');
+      toast.success('Program intake added successfully');
       setOpen(false);
       resetForm();
-      fetchFees();
+      fetchIntakes();
     } catch (error: unknown) {
       const errorResponse = error as { response?: { status?: number; data?: { detail?: string; message?: string } } };
-      console.error('Program fee creation error:', errorResponse.response?.data);
+      console.error('Program intake creation error:', errorResponse.response?.data);
       if (errorResponse?.response?.status === 400) {
         const errorMsg = errorResponse.response?.data?.detail || errorResponse.response?.data?.message || 'Invalid data provided';
         toast.error(`Validation error: ${errorMsg}`);
       } else {
-        toast.error('Failed to add program fee');
+        toast.error('Failed to add program intake');
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateFee = async () => {
-    if (!selectedFee) return;
-    if (!formData.program) {
+  const handleUpdateIntake = async () => {
+    if (!selectedIntake) return;
+    if (!formData.program_id) {
       toast.error('Please select a program');
+      return;
+    }
+    if (!formData.start_month) {
+      toast.error('Please enter start month');
+      return;
+    }
+    if (!formData.application_deadline) {
+      toast.error('Please enter application deadline');
+      return;
+    }
+    if (!formData.seats || parseInt(formData.seats) <= 0) {
+      toast.error('Please enter valid number of seats');
       return;
     }
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
       const payload = {
-        program: formData.program,
-        tuition_amount: formData.tuition_amount,
-        tuition_currency: formData.tuition_currency,
-        application_fee_amount: formData.application_fee_amount,
-        deposit_amount: formData.deposit_amount,
-        has_scholarship: formData.has_scholarship,
-        scholarship_percent: formData.scholarship_percent,
+        program_id: formData.program_id,
+        start_month: formData.start_month,
+        application_deadline: formData.application_deadline,
+        seats: parseInt(formData.seats),
+        is_open: formData.is_open,
         is_active: formData.is_active
       };
-      console.log('Updating program fee data:', payload);
-      await CallApi.put(`${backend_path.UPDATE_PROGRAM_FEE}${selectedFee.id}/`, payload, {
+      console.log('Updating program intake data:', payload);
+      await CallApi.put(`${backend_path.UPDATE_PROGRAM_INTAKE}${selectedIntake.id}/`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success('Program fee updated successfully');
+      toast.success('Program intake updated successfully');
       setEditOpen(false);
-      setSelectedFee(null);
+      setSelectedIntake(null);
       resetForm();
-      fetchFees();
+      fetchIntakes();
     } catch (error: unknown) {
       const errorResponse = error as { response?: { status?: number; data?: { detail?: string; message?: string } } };
-      console.error('Program fee update error:', errorResponse.response?.data);
+      console.error('Program intake update error:', errorResponse.response?.data);
       if (errorResponse?.response?.status === 400) {
         const errorMsg = errorResponse.response?.data?.detail || errorResponse.response?.data?.message || 'Invalid data provided';
         toast.error(`Validation error: ${errorMsg}`);
       } else {
-        toast.error('Failed to update program fee');
+        toast.error('Failed to update program intake');
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDeleteFee = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this program fee?')) return;
+  const handleDeleteIntake = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this program intake?')) return;
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
-      await CallApi.delete(`${backend_path.DELETE_PROGRAM_FEE}${id}/`, {
+      await CallApi.delete(`${backend_path.DELETE_PROGRAM_INTAKE}${id}/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success('Program fee deleted successfully');
-      fetchFees();
-    } catch {
-      toast.error('Failed to delete program fee');
+      toast.success('Program intake deleted successfully');
+      fetchIntakes();
+    } catch (error) {
+      console.error('Error deleting intake:', error);
+      toast.error('Failed to delete program intake');
     } finally {
       setLoading(false);
     }
   };
 
-  const openEditDialog = (fee: ProgramFee) => {
-    setSelectedFee(fee);
+  const openEditDialog = (intake: ProgramIntake) => {
+    setSelectedIntake(intake);
     setFormData({
-      program: fee.program,
-      tuition_amount: fee.tuition_amount,
-      tuition_currency: fee.tuition_currency,
-      application_fee_amount: fee.application_fee_amount,
-      deposit_amount: fee.deposit_amount,
-      has_scholarship: fee.has_scholarship,
-      scholarship_percent: fee.scholarship_percent,
-      is_active: fee.is_active
+      program_id: intake.program_id || '',
+      start_month: intake.start_month || '',
+      application_deadline: intake.application_deadline || '',
+      seats: intake.seats.toString() || '',
+      is_open: intake.is_open ?? true,
+      is_active: intake.is_active ?? true
     });
     setEditOpen(true);
   };
 
   const resetForm = () => {
     setFormData({
-      program: '',
-      tuition_amount: '',
-      tuition_currency: 'RWF',
-      application_fee_amount: '',
-      deposit_amount: '',
-      has_scholarship: false,
-      scholarship_percent: '',
+      program_id: '',
+      start_month: '',
+      application_deadline: '',
+      seats: '',
+      is_open: true,
       is_active: true
     });
   };
 
-  const getProgramName = (programId: string) => {
+  const getProgramName = (programId: string | undefined | null) => {
+    // Handle null, undefined, or empty programId
+    if (!programId) {
+      return 'No Program Assigned';
+    }
+    
     if (!programs.length) {
       return `Loading... (${programId})`;
     }
@@ -253,39 +271,42 @@ const ProgramFees = () => {
       program = programs.find(p => p.id === idWithHyphens);
     }
     
-    console.log('Looking for program ID:', programId);
-    console.log('Available programs:', programs);
-    console.log('Found program:', program);
-    
     return program?.name || `Unknown Program (${programId})`;
   };
 
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString();
+    } catch {
+      return dateString;
+    }
+  };
+
   // Filter and search functionality
-  const filteredFees = useMemo(() => {
-    if (!searchTerm) return fees;
+  const filteredIntakes = useMemo(() => {
+    if (!searchTerm) return intakes;
     
-    return fees.filter(fee => {
-      const programName = getProgramName(fee.program).toLowerCase();
-      const tuitionAmount = fee.tuition_amount.toLowerCase();
-      const currency = fee.tuition_currency.toLowerCase();
+    return intakes.filter(intake => {
+      const programName = getProgramName(intake.program_id).toLowerCase();
+      const startMonth = intake.start_month.toLowerCase();
+      const deadline = formatDate(intake.application_deadline).toLowerCase();
+      const seats = intake.seats.toString();
       const searchLower = searchTerm.toLowerCase();
       
       return (
         programName.includes(searchLower) ||
-        tuitionAmount.includes(searchLower) ||
-        currency.includes(searchLower) ||
-        fee.application_fee_amount.includes(searchLower) ||
-        fee.deposit_amount.includes(searchLower) ||
-        fee.scholarship_percent.includes(searchLower)
+        startMonth.includes(searchLower) ||
+        deadline.includes(searchLower) ||
+        seats.includes(searchLower)
       );
     });
-  }, [fees, searchTerm, programs]);
+  }, [intakes, searchTerm, programs]);
 
   // Pagination logic
-  const totalPages = Math.ceil(filteredFees.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredIntakes.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentFees = filteredFees.slice(startIndex, endIndex);
+  const currentIntakes = filteredIntakes.slice(startIndex, endIndex);
 
   // Reset to first page when search term changes
   useEffect(() => {
@@ -293,10 +314,10 @@ const ProgramFees = () => {
   }, [searchTerm]);
 
   useEffect(() => {
-    // Load programs first, then fees
+    // Load programs first, then intakes
     const loadData = async () => {
       await fetchPrograms();
-      await fetchFees();
+      await fetchIntakes();
     };
     loadData();
   }, []);
@@ -304,22 +325,22 @@ const ProgramFees = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-primarycolor-500">Program Fees</h1>
+        <h1 className="text-2xl font-bold text-primarycolor-500">Program Intakes</h1>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="bg-primarycolor-500 hover:bg-primarycolor-600 text-white">
               <Plus className="w-4 h-4" />
-              Add Program Fee
+              Add Program Intake
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
-              <DialogTitle>Add New Program Fee</DialogTitle>
+              <DialogTitle>Add New Program Intake</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="program">Program</Label>
-                <Select value={formData.program} onValueChange={(value) => setFormData({ ...formData, program: value })}>
+                <Label htmlFor="program_id">Program</Label>
+                <Select value={formData.program_id} onValueChange={(value) => setFormData({ ...formData, program_id: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select Program" />
                   </SelectTrigger>
@@ -337,66 +358,43 @@ const ProgramFees = () => {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="tuition_amount">Tuition Amount</Label>
+                <Label htmlFor="start_month">Start Month</Label>
                 <Input
-                  id="tuition_amount"
-                  type="number"
-                  placeholder="Tuition Amount"
-                  value={formData.tuition_amount}
-                  onChange={(e) => setFormData({ ...formData, tuition_amount: e.target.value })}
+                  id="start_month"
+                  placeholder="Start Month (e.g., September 2025)"
+                  value={formData.start_month}
+                  onChange={(e) => setFormData({ ...formData, start_month: e.target.value })}
                 />
               </div>
               <div>
-                <Label htmlFor="tuition_currency">Currency</Label>
-                <Select value={formData.tuition_currency} onValueChange={(value) => setFormData({ ...formData, tuition_currency: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Currency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="RWF">RWF</SelectItem>
-                    <SelectItem value="USD">USD</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="application_fee_amount">Application Fee Amount</Label>
+                <Label htmlFor="application_deadline">Application Deadline</Label>
                 <Input
-                  id="application_fee_amount"
-                  type="number"
-                  placeholder="Application Fee Amount"
-                  value={formData.application_fee_amount}
-                  onChange={(e) => setFormData({ ...formData, application_fee_amount: e.target.value })}
+                  id="application_deadline"
+                  type="date"
+                  value={formData.application_deadline}
+                  onChange={(e) => setFormData({ ...formData, application_deadline: e.target.value })}
                 />
               </div>
               <div>
-                <Label htmlFor="deposit_amount">Deposit Amount</Label>
+                <Label htmlFor="seats">Number of Seats</Label>
                 <Input
-                  id="deposit_amount"
+                  id="seats"
                   type="number"
-                  placeholder="Deposit Amount"
-                  value={formData.deposit_amount}
-                  onChange={(e) => setFormData({ ...formData, deposit_amount: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="scholarship_percent">Scholarship Percentage</Label>
-                <Input
-                  id="scholarship_percent"
-                  type="number"
-                  placeholder="Scholarship Percentage"
-                  value={formData.scholarship_percent}
-                  onChange={(e) => setFormData({ ...formData, scholarship_percent: e.target.value })}
+                  min="1"
+                  placeholder="Number of seats available"
+                  value={formData.seats}
+                  onChange={(e) => setFormData({ ...formData, seats: e.target.value })}
                 />
               </div>
               <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  id="has_scholarship"
-                  checked={formData.has_scholarship}
-                  onChange={(e) => setFormData({ ...formData, has_scholarship: e.target.checked })}
+                  id="is_open"
+                  checked={formData.is_open}
+                  onChange={(e) => setFormData({ ...formData, is_open: e.target.checked })}
                   className="rounded"
                 />
-                <Label htmlFor="has_scholarship">Has Scholarship</Label>
+                <Label htmlFor="is_open">Is Open for Applications</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <input
@@ -412,26 +410,26 @@ const ProgramFees = () => {
             <DialogFooter>
               <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
               <Button 
-                onClick={handleAddFee} 
-                disabled={loading || !formData.program}
+                onClick={handleAddIntake} 
+                disabled={loading || !formData.program_id || !formData.start_month || !formData.application_deadline || !formData.seats}
                 className="bg-primarycolor-500 hover:bg-primarycolor-600"
               >
-                {loading ? 'Adding...' : 'Add Fee'}
+                {loading ? 'Adding...' : 'Add Intake'}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
-        {/* Edit Program Fee Dialog */}
+        {/* Edit Program Intake Dialog */}
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
-              <DialogTitle>Edit Program Fee</DialogTitle>
+              <DialogTitle>Edit Program Intake</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="edit_program">Program</Label>
-                <Select value={formData.program} onValueChange={(value) => setFormData({ ...formData, program: value })}>
+                <Label htmlFor="edit_program_id">Program</Label>
+                <Select value={formData.program_id} onValueChange={(value) => setFormData({ ...formData, program_id: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select Program" />
                   </SelectTrigger>
@@ -449,66 +447,43 @@ const ProgramFees = () => {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="edit_tuition_amount">Tuition Amount</Label>
+                <Label htmlFor="edit_start_month">Start Month</Label>
                 <Input
-                  id="edit_tuition_amount"
-                  type="number"
-                  placeholder="Tuition Amount"
-                  value={formData.tuition_amount}
-                  onChange={(e) => setFormData({ ...formData, tuition_amount: e.target.value })}
+                  id="edit_start_month"
+                  placeholder="Start Month"
+                  value={formData.start_month}
+                  onChange={(e) => setFormData({ ...formData, start_month: e.target.value })}
                 />
               </div>
               <div>
-                <Label htmlFor="edit_tuition_currency">Currency</Label>
-                <Select value={formData.tuition_currency} onValueChange={(value) => setFormData({ ...formData, tuition_currency: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Currency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="RWF">RWF</SelectItem>
-                    <SelectItem value="USD">USD</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="edit_application_fee_amount">Application Fee Amount</Label>
+                <Label htmlFor="edit_application_deadline">Application Deadline</Label>
                 <Input
-                  id="edit_application_fee_amount"
-                  type="number"
-                  placeholder="Application Fee Amount"
-                  value={formData.application_fee_amount}
-                  onChange={(e) => setFormData({ ...formData, application_fee_amount: e.target.value })}
+                  id="edit_application_deadline"
+                  type="date"
+                  value={formData.application_deadline}
+                  onChange={(e) => setFormData({ ...formData, application_deadline: e.target.value })}
                 />
               </div>
               <div>
-                <Label htmlFor="edit_deposit_amount">Deposit Amount</Label>
+                <Label htmlFor="edit_seats">Number of Seats</Label>
                 <Input
-                  id="edit_deposit_amount"
+                  id="edit_seats"
                   type="number"
-                  placeholder="Deposit Amount"
-                  value={formData.deposit_amount}
-                  onChange={(e) => setFormData({ ...formData, deposit_amount: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit_scholarship_percent">Scholarship Percentage</Label>
-                <Input
-                  id="edit_scholarship_percent"
-                  type="number"
-                  placeholder="Scholarship Percentage"
-                  value={formData.scholarship_percent}
-                  onChange={(e) => setFormData({ ...formData, scholarship_percent: e.target.value })}
+                  min="1"
+                  placeholder="Number of seats"
+                  value={formData.seats}
+                  onChange={(e) => setFormData({ ...formData, seats: e.target.value })}
                 />
               </div>
               <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  id="edit_has_scholarship"
-                  checked={formData.has_scholarship}
-                  onChange={(e) => setFormData({ ...formData, has_scholarship: e.target.checked })}
+                  id="edit_is_open"
+                  checked={formData.is_open}
+                  onChange={(e) => setFormData({ ...formData, is_open: e.target.checked })}
                   className="rounded"
                 />
-                <Label htmlFor="edit_has_scholarship">Has Scholarship</Label>
+                <Label htmlFor="edit_is_open">Is Open for Applications</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <input
@@ -524,8 +499,8 @@ const ProgramFees = () => {
             <DialogFooter>
               <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
               <Button 
-                onClick={handleUpdateFee} 
-                disabled={loading || !formData.program}
+                onClick={handleUpdateIntake} 
+                disabled={loading || !formData.program_id || !formData.start_month || !formData.application_deadline || !formData.seats}
                 className="bg-primarycolor-500 hover:bg-primarycolor-600"
               >
                 {loading ? 'Updating...' : 'Update'}
@@ -540,14 +515,14 @@ const ProgramFees = () => {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
-            placeholder="Search program fees..."
+            placeholder="Search program intakes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
           />
         </div>
         <div className="text-sm text-gray-600">
-          {filteredFees.length} of {fees.length} fees
+          {filteredIntakes.length} of {intakes.length} intakes
         </div>
       </div>
 
@@ -556,10 +531,10 @@ const ProgramFees = () => {
           <TableHeader>
             <TableRow className="bg-primarycolor-500 hover:bg-primarycolor-500">
               <TableHead className="text-white font-semibold">Program</TableHead>
-              <TableHead className="hidden sm:table-cell text-white font-semibold">Tuition</TableHead>
-              <TableHead className="hidden md:table-cell text-white font-semibold">App Fee</TableHead>
-              <TableHead className="hidden lg:table-cell text-white font-semibold">Deposit</TableHead>
-              <TableHead className="hidden xl:table-cell text-white font-semibold">Scholarship</TableHead>
+              <TableHead className="hidden sm:table-cell text-white font-semibold">Start Month</TableHead>
+              <TableHead className="hidden md:table-cell text-white font-semibold">Deadline</TableHead>
+              <TableHead className="hidden lg:table-cell text-white font-semibold">Seats</TableHead>
+              <TableHead className="hidden xl:table-cell text-white font-semibold">Status</TableHead>
               <TableHead className="text-white font-semibold">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -568,34 +543,39 @@ const ProgramFees = () => {
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-8">Loading...</TableCell>
               </TableRow>
-            ) : currentFees.length === 0 ? (
+            ) : currentIntakes.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-8">
-                  {searchTerm ? 'No program fees found matching your search.' : 'No program fees found'}
+                  {searchTerm ? 'No program intakes found matching your search.' : 'No program intakes found'}
                 </TableCell>
               </TableRow>
             ) : (
-              currentFees.map((fee) => (
-                <TableRow key={fee.id} className="hover:bg-gray-50">
-                  <TableCell className="font-medium text-gray-900">{getProgramName(fee.program)}</TableCell>
-                  <TableCell className="hidden sm:table-cell text-gray-700">
-                    {fee.tuition_amount} {fee.tuition_currency}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell text-gray-700">{fee.application_fee_amount}</TableCell>
-                  <TableCell className="hidden lg:table-cell text-gray-700">{fee.deposit_amount}</TableCell>
+              currentIntakes.map((intake) => (
+                <TableRow key={intake.id} className="hover:bg-gray-50">
+                  <TableCell className="font-medium text-gray-900">{getProgramName(intake.program_id)}</TableCell>
+                  <TableCell className="hidden sm:table-cell text-gray-700">{intake.start_month}</TableCell>
+                  <TableCell className="hidden md:table-cell text-gray-700">{formatDate(intake.application_deadline)}</TableCell>
+                  <TableCell className="hidden lg:table-cell text-gray-700">{intake.seats.toLocaleString()}</TableCell>
                   <TableCell className="hidden xl:table-cell">
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      fee.has_scholarship ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {fee.has_scholarship ? `${fee.scholarship_percent}%` : 'None'}
-                    </span>
+                    <div className="flex flex-col gap-1">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        intake.is_open ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {intake.is_open ? 'Open' : 'Closed'}
+                      </span>
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        intake.is_active ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {intake.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => openEditDialog(fee)}
+                        onClick={() => openEditDialog(intake)}
                         className="h-8 w-8 p-0"
                       >
                         <Edit className="h-4 w-4" />
@@ -603,7 +583,7 @@ const ProgramFees = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleDeleteFee(fee.id)}
+                        onClick={() => handleDeleteIntake(intake.id)}
                         className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -667,4 +647,4 @@ const ProgramFees = () => {
   );
 };
 
-export default ProgramFees;
+export default ProgramIntake;

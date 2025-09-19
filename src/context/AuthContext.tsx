@@ -128,7 +128,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (formData: { email: string; password: string }) => {
     try {
       setLoading(true);
-      console.log('Login request data:', formData);
+      // console.log('Login request data:', formData);
       const res = await CallApi.post(backend_path.LOGIN, formData);
       let roles: RoleObj[] = [];
       if (res.data.user?.roles && Array.isArray(res.data.user.roles) && res.data.user.roles.length > 0) {
@@ -248,7 +248,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     try {
       const res = await CallApi.get(`${backend_path.GET_USER_PROFILE}?user=${authUser.id}`);
-      console.log('Profile API response:', res.data);
+      // console.log('Profile API response:', res.data);
       
       if (res.data) {
         // Handle both array and single object responses
