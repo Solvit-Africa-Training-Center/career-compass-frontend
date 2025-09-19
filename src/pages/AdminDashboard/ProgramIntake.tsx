@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, Edit, Trash2, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
@@ -48,6 +48,7 @@ const ProgramIntake = () => {
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [selectedIntake, setSelectedIntake] = useState<ProgramIntake | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -122,6 +123,7 @@ const ProgramIntake = () => {
       const token = localStorage.getItem('accessToken');
       const payload = {
         program_id: formData.program_id,
+        program: formData.program_id,
         start_month: formData.start_month,
         application_deadline: formData.application_deadline,
         seats: parseInt(formData.seats),
@@ -151,7 +153,9 @@ const ProgramIntake = () => {
   };
 
   const handleUpdateIntake = async () => {
-    if (!selectedIntake) return;
+    if (!selectedIntake) {
+      return;
+    }
     if (!formData.program_id) {
       toast.error('Please select a program');
       return;
@@ -173,6 +177,7 @@ const ProgramIntake = () => {
       const token = localStorage.getItem('accessToken');
       const payload = {
         program_id: formData.program_id,
+        program: formData.program_id,
         start_month: formData.start_month,
         application_deadline: formData.application_deadline,
         seats: parseInt(formData.seats),
@@ -203,7 +208,9 @@ const ProgramIntake = () => {
   };
 
   const handleDeleteIntake = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this program intake?')) return;
+    if (!confirm('Are you sure you want to delete this program intake?')) {
+      return;
+    }
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
@@ -220,10 +227,15 @@ const ProgramIntake = () => {
     }
   };
 
+  const openDetailsDialog = (intake: ProgramIntake) => {
+    setSelectedIntake(intake);
+    setDetailsOpen(true);
+  };
+
   const openEditDialog = (intake: ProgramIntake) => {
     setSelectedIntake(intake);
     setFormData({
-      program_id: intake.program_id || '',
+      program_id: intake.program || '',
       start_month: intake.start_month || '',
       application_deadline: intake.application_deadline || '',
       seats: intake.seats.toString() || '',
@@ -245,32 +257,11 @@ const ProgramIntake = () => {
   };
 
   const getProgramName = (programId: string | undefined | null) => {
-    // Handle null, undefined, or empty programId
-    if (!programId) {
+    if (!programId || !programs.length) {
       return 'No Program Assigned';
     }
     
-    if (!programs.length) {
-      return `Loading... (${programId})`;
-    }
-    
-    // Try to find program by both id formats (with and without hyphens)
-    let program = programs.find(p => p.id === programId);
-    
-    // If not found, try to find by converting the ID format
-    if (!program) {
-      // Convert UUID with hyphens to format without hyphens
-      const idWithoutHyphens = programId.replace(/-/g, '');
-      program = programs.find(p => p.id === idWithoutHyphens);
-    }
-    
-    // If still not found, try the reverse (without hyphens to with hyphens)
-    if (!program) {
-      // Convert format without hyphens to UUID with hyphens
-      const idWithHyphens = programId.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5');
-      program = programs.find(p => p.id === idWithHyphens);
-    }
-    
+    const program = programs.find(p => p.id === programId || p.id === programId.replace(/-/g, ''));
     return program?.name || `Unknown Program (${programId})`;
   };
 
@@ -284,10 +275,12 @@ const ProgramIntake = () => {
 
   // Filter and search functionality
   const filteredIntakes = useMemo(() => {
-    if (!searchTerm) return intakes;
+    if (!searchTerm) {
+      return intakes;
+    }
     
     return intakes.filter(intake => {
-      const programName = getProgramName(intake.program_id).toLowerCase();
+      const programName = getProgramName(intake.program).toLowerCase();
       const startMonth = intake.start_month.toLowerCase();
       const deadline = formatDate(intake.application_deadline).toLowerCase();
       const seats = intake.seats.toString();
@@ -361,7 +354,7 @@ const ProgramIntake = () => {
                 <Label htmlFor="start_month">Start Month</Label>
                 <Input
                   id="start_month"
-                  placeholder="Start Month (e.g., September 2025)"
+                  type="date"
                   value={formData.start_month}
                   onChange={(e) => setFormData({ ...formData, start_month: e.target.value })}
                 />
@@ -420,6 +413,55 @@ const ProgramIntake = () => {
           </DialogContent>
         </Dialog>
 
+        {/* View Program Intake Dialog */}
+        <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Eye className="w-5 h-5" />
+                Program Intake Details
+              </DialogTitle>
+            </DialogHeader>
+            {selectedIntake && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Program</label>
+                    <p className="text-sm font-semibold">{getProgramName(selectedIntake.program)}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Start Month</label>
+                    <p className="text-sm">{selectedIntake.start_month}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Application Deadline</label>
+                    <p className="text-sm">{formatDate(selectedIntake.application_deadline)}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Seats</label>
+                    <p className="text-sm">{selectedIntake.seats.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Status</label>
+                    <div className="flex flex-col gap-1">
+                      <span className={`px-2 py-1 rounded-full text-xs w-fit ${
+                        selectedIntake.is_open ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {selectedIntake.is_open ? 'Open' : 'Closed'}
+                      </span>
+                      <span className={`px-2 py-1 rounded-full text-xs w-fit ${
+                        selectedIntake.is_active ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {selectedIntake.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
         {/* Edit Program Intake Dialog */}
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
           <DialogContent className="sm:max-w-lg">
@@ -450,7 +492,7 @@ const ProgramIntake = () => {
                 <Label htmlFor="edit_start_month">Start Month</Label>
                 <Input
                   id="edit_start_month"
-                  placeholder="Start Month"
+                  type="date"
                   value={formData.start_month}
                   onChange={(e) => setFormData({ ...formData, start_month: e.target.value })}
                 />
@@ -552,7 +594,7 @@ const ProgramIntake = () => {
             ) : (
               currentIntakes.map((intake) => (
                 <TableRow key={intake.id} className="hover:bg-gray-50">
-                  <TableCell className="font-medium text-gray-900">{getProgramName(intake.program_id)}</TableCell>
+                  <TableCell className="font-medium text-gray-900">{getProgramName(intake.program)}</TableCell>
                   <TableCell className="hidden sm:table-cell text-gray-700">{intake.start_month}</TableCell>
                   <TableCell className="hidden md:table-cell text-gray-700">{formatDate(intake.application_deadline)}</TableCell>
                   <TableCell className="hidden lg:table-cell text-gray-700">{intake.seats.toLocaleString()}</TableCell>
@@ -572,6 +614,14 @@ const ProgramIntake = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openDetailsDialog(intake)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
