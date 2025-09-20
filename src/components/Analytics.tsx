@@ -1,4 +1,3 @@
-import React from 'react';
 import StatCard from '@/components/cards/StatCard';
 import DeadlineCard from './DeadlineCard';
 import type { AnalyticsProps, StatCardData, DeadlineItem } from '@/types/';

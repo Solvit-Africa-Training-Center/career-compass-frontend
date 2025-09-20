@@ -1,4 +1,3 @@
-import React from 'react';
 import { Edit, User, Mail, Phone, Calendar, MapPin, Globe } from 'lucide-react';
 import type { Profile } from '@/types/';
 

@@ -109,7 +109,7 @@ export interface TranscriptFormProps {
 
 export interface PersonalityAssessmentProps {
   onSubmit: (profile: PersonalityProfile) => void;
-  questions: PersonalityQuestion[];
+  questions?: PersonalityQuestion[];
 }
 
 export interface RecommendationsProps {

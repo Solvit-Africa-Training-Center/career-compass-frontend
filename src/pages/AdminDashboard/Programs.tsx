@@ -105,7 +105,9 @@ const Programs = () => {
   };
 
   const handleUpdateProgram = async () => {
-    if (!selectedProgram) return;
+    if (!selectedProgram) {
+      return;
+    }
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
