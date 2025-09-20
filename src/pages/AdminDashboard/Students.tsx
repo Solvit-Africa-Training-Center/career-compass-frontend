@@ -33,6 +33,8 @@ const Students = () => {
   const [loading, setLoading] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -122,12 +124,19 @@ const Students = () => {
     }
   };
 
-  const handleDelete = async (studentId: number) => {
-    if (!confirm('Are you sure you want to delete this student?')) return;
+  const handleDelete = (studentId: number) => {
+    setDeleteId(studentId);
+    setDeleteOpen(true);
+  };
+
+  const performDelete = async () => {
+    if (!deleteId) return;
     try {
       setLoading(true);
-      await CallApi.delete(`${backend_path.DELETE_STUDENT}${studentId}/`);
+      await CallApi.delete(`${backend_path.DELETE_STUDENT}${deleteId}/`);
       toast.success('Student deleted successfully');
+      setDeleteOpen(false);
+      setDeleteId(null);
       fetchStudents();
     } catch {
       toast.error('Failed to delete student');
@@ -229,6 +238,39 @@ const Students = () => {
             </DialogContent>
           </Dialog>
         </div>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-red-600">
+                <Trash2 className="w-5 h-5" />
+                Confirm Deletion
+              </DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-gray-600">
+                Are you sure you want to delete this student? This action cannot be undone.
+              </p>
+            </div>
+            <DialogFooter className="gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setDeleteOpen(false)}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={performDelete}
+                disabled={loading}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                {loading ? 'Deleting...' : 'Delete'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Edit Student Dialog */}
         <Dialog open={editOpen} onOpenChange={setEditOpen}>

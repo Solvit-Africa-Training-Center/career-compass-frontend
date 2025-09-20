@@ -79,4 +79,47 @@ export interface AnalyticsProps {
   showDeadlines?: boolean;
   className?: string;
 }
+export interface AnalyticsProps {
+  stats?: StatCardData[];
+  deadlines?: DeadlineItem[];
+  showDeadlines?: boolean;
+  className?: string;
+}
+
+// Chatbot types
+export interface ChatMessage {
+  id: string;
+  text: string;
+  isBot: boolean;
+  timestamp: Date;
+  session_id?: string;
+}
+
+export interface ChatSession {
+  id: string;
+  role: 'student' | 'admin' | 'institution' | 'staff' | 'agent';
+  created_at: string;
+  updated_at: string;
+  is_active: boolean;
+}
+
+export interface ChatRequest {
+  session_id: string;
+  message: string;
+  context?: {
+    role?: string;
+    field?: string;
+    interest?: string;
+    user_name?: string;
+    profile?: any;
+    [key: string]: any;
+  };
+}
+
+export interface ChatResponse {
+  message: string;
+  session_id: string;
+  context?: any;
+  response?: string;
+}
 export * from "./career";
