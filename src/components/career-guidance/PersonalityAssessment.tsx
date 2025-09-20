@@ -22,7 +22,7 @@ const PersonalityAssessment: React.FC<PersonalityAssessmentProps> = ({ onSubmit 
     'Strongly Agree'
   ];
 
-  const getCurrentResponse = (): string | number | undefined => {
+  const getCurrentResponse = (): string | number | boolean | undefined  => {
     const response = responses.find(r => r.questionId === currentQuestion.id);
     return response?.answer;
   };

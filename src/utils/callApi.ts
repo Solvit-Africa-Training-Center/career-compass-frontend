@@ -1,5 +1,5 @@
 
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { Api } from "./env";
 import Cookies from "js-cookie";
 import { backend_path } from "./enum";
