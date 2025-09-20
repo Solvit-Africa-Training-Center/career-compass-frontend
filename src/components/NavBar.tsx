@@ -1,5 +1,5 @@
-import { BookOpen, Moon, Sun,ToggleLeft, ToggleRight } from "lucide-react";
-import React, { useState } from "react";
+import {  Moon, Sun } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/Button";
 import { useTheme } from "@/hooks/useTheme";

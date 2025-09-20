@@ -15,7 +15,6 @@ import {
     MessageSquare,
     DollarSign,
     Star,
-    CheckSquare,
     ClipboardList,
     Bot,
     CalendarDays

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Users, Building2, GraduationCap, TrendingUp, CheckCircle, AlertCircle } from 'lucide-react';
 import CallApi from '@/utils/callApi';
 import { backend_path } from '@/utils/enum';
