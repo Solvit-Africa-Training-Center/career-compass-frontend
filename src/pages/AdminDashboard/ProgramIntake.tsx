@@ -123,7 +123,6 @@ const ProgramIntake = () => {
       const token = localStorage.getItem('accessToken');
       const payload = {
         program_id: formData.program_id,
-        program: formData.program_id,
         start_month: formData.start_month,
         application_deadline: formData.application_deadline,
         seats: parseInt(formData.seats),
