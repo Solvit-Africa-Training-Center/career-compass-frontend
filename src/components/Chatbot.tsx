@@ -18,7 +18,7 @@ const Chatbot: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const userName = profile?.last_name || 'Student';
+  const userName = profile?.first_name || 'Student';
 
   useEffect(() => {
     // Welcome message on startup
