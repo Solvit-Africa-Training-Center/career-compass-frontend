@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface ProfileSidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
