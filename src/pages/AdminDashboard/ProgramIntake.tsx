@@ -49,6 +49,8 @@ const ProgramIntake = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [selectedIntake, setSelectedIntake] = useState<ProgramIntake | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -206,17 +208,22 @@ const ProgramIntake = () => {
     }
   };
 
-  const handleDeleteIntake = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this program intake?')) {
-      return;
-    }
+  const handleDeleteIntake = (id: string) => {
+    setDeleteId(id);
+    setDeleteOpen(true);
+  };
+
+  const performDelete = async () => {
+    if (!deleteId) return;
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
-      await CallApi.delete(`${backend_path.DELETE_PROGRAM_INTAKE}${id}/`, {
+      await CallApi.delete(`${backend_path.DELETE_PROGRAM_INTAKE}${deleteId}/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Program intake deleted successfully');
+      setDeleteOpen(false);
+      setDeleteId(null);
       fetchIntakes();
     } catch (error) {
       console.error('Error deleting intake:', error);
@@ -458,6 +465,39 @@ const ProgramIntake = () => {
                 </div>
               </div>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-red-600">
+                <Trash2 className="w-5 h-5" />
+                Confirm Deletion
+              </DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-gray-600">
+                Are you sure you want to delete this program intake? This action cannot be undone.
+              </p>
+            </div>
+            <DialogFooter className="gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setDeleteOpen(false)}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={performDelete}
+                disabled={loading}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                {loading ? 'Deleting...' : 'Delete'}
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
 

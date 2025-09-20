@@ -129,9 +129,56 @@ const ProgramsList: React.FC<ProgramsListProps> = ({
   const fetchPrograms = async () => {
     try {
       setLoading(true);
-      const response = await CallApi.get(backend_path.GET_PROGRAM);
-      const backendPrograms: BackendProgram[] = response.data.results || response.data;
-      const transformedPrograms = backendPrograms.map(transformBackendProgram);
+      const [programsResponse, intakesResponse] = await Promise.all([
+        CallApi.get(backend_path.GET_PROGRAM),
+        CallApi.get(backend_path.GET_PROGRAM_INTAKE)
+      ]);
+      
+      const backendPrograms = programsResponse.data.results || programsResponse.data || [];
+      const intakes = intakesResponse.data || [];
+      
+      const transformedPrograms = backendPrograms.map((program: any) => {
+        const programIntakes = intakes.filter((intake: any) => intake.program === program.id);
+        const latestIntake = programIntakes[0] || {};
+        
+        const deadline = latestIntake.application_deadline ? new Date(latestIntake.application_deadline) : new Date();
+        const now = new Date();
+        const timeDiff = deadline.getTime() - now.getTime();
+        const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        
+        let timeToClose = 'Closed';
+        let isUrgent = false;
+        let status: 'Open' | 'Closed' = 'Closed';
+        
+        if (latestIntake.is_open && daysLeft > 0) {
+          status = 'Open';
+          if (daysLeft <= 7) {
+            timeToClose = `${daysLeft} days to close`;
+            isUrgent = true;
+          } else if (daysLeft <= 30) {
+            timeToClose = `${Math.ceil(daysLeft / 7)} weeks to close`;
+          } else {
+            timeToClose = `${Math.ceil(daysLeft / 30)} months to close`;
+          }
+        }
+        
+        return {
+          id: program.id.toString(),
+          title: program.name,
+          institution: program.institution_name || 'Unknown Institution',
+          location: program.location || 'Unknown Location',
+          seatsRemain: latestIntake.seats || 0,
+          deadline: deadline.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
+          timeToClose,
+          status,
+          isUrgent,
+          duration: program.duration,
+          level: program.level,
+          language: program.language,
+          description: program.description
+        };
+      });
+      
       setPrograms(transformedPrograms);
     } catch (error) {
       console.error('Error fetching programs:', error);

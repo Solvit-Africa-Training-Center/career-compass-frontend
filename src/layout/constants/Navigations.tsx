@@ -1,7 +1,7 @@
 import {  
     LayoutDashboard, 
     LogOut,
-    Settings, 
+    // Settings, 
     Sparkle,
     Users,
     Building2,
@@ -133,12 +133,12 @@ export const ADMIN_SIDEBAR_LINKS: SidebarLink[] = [
         path:'/admin/analytics',
         icon:<BarChart3 size={20} strokeWidth={2.5} />
     },
-    {
-        key:'settings',
-        label:'Settings',
-        path:'/admin/settings',
-        icon:<Settings size={20} strokeWidth={2.5}/>
-    }
+    // {
+    //     key:'settings',
+    //     label:'Settings',
+    //     path:'/admin/settings',
+    //     icon:<Settings size={20} strokeWidth={2.5}/>
+    // }
 ];
 
 export const INSTITUTE_SIDEBAR_LINKS: SidebarLink[] = [

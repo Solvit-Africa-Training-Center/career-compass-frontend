@@ -49,6 +49,8 @@ const ProgramFees = () => {
   const [programsLoading, setProgramsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [selectedFee, setSelectedFee] = useState<ProgramFee | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -186,15 +188,22 @@ const ProgramFees = () => {
     }
   };
 
-  const handleDeleteFee = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this program fee?')) return;
+  const handleDeleteFee = (id: number) => {
+    setDeleteId(id.toString());
+    setDeleteOpen(true);
+  };
+
+  const performDelete = async () => {
+    if (!deleteId) return;
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
-      await CallApi.delete(`${backend_path.DELETE_PROGRAM_FEE}${id}/`, {
+      await CallApi.delete(`${backend_path.DELETE_PROGRAM_FEE}${deleteId}/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Program fee deleted successfully');
+      setDeleteOpen(false);
+      setDeleteId(null);
       fetchFees();
     } catch {
       toast.error('Failed to delete program fee');
@@ -417,6 +426,39 @@ const ProgramFees = () => {
                 className="bg-primarycolor-500 hover:bg-primarycolor-600"
               >
                 {loading ? 'Adding...' : 'Add Fee'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-red-600">
+                <Trash2 className="w-5 h-5" />
+                Confirm Deletion
+              </DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-gray-600">
+                Are you sure you want to delete this program fee? This action cannot be undone.
+              </p>
+            </div>
+            <DialogFooter className="gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setDeleteOpen(false)}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={performDelete}
+                disabled={loading}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                {loading ? 'Deleting...' : 'Delete'}
               </Button>
             </DialogFooter>
           </DialogContent>

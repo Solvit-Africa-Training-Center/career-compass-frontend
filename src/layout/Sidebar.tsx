@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { X, Menu } from 'lucide-react';
+import { X, Menu, LogOut } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/Button';
 import { 
     STUDENT_SIDEBAR_LINKS,
     ADMIN_SIDEBAR_LINKS,
@@ -25,6 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole = ['student'], isOpen = true
     const location = useLocation();
     const { isDark } = useTheme();
     const {logout} = useAuth();
+    const [logoutOpen, setLogoutOpen] = useState(false);
     
 // Normalize userRole to a string code
     let roleCode = 'student';
@@ -59,9 +62,12 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole = ['student'], isOpen = true
     };
 
     const handleLogout = () => {
-        if (window.confirm('Are you sure you want to logout?')) {
-            logout();
-        }
+        setLogoutOpen(true);
+    };
+
+    const performLogout = () => {
+        logout();
+        setLogoutOpen(false);
     };
 
     return (
@@ -205,6 +211,37 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole = ['student'], isOpen = true
                 </nav>
             </div>
             </div>
+
+            {/* Logout Confirmation Dialog */}
+            <Dialog open={logoutOpen} onOpenChange={setLogoutOpen}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-warning">
+                            <LogOut className="w-5 h-5" />
+                            Confirm Logout
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <p className="text-gray-600">
+                            Are you sure you want to logout? You will need to sign in again to access your account.
+                        </p>
+                    </div>
+                    <DialogFooter className="gap-2">
+                        <Button 
+                            variant="outline" 
+                            onClick={() => setLogoutOpen(false)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button 
+                            onClick={performLogout}
+                            className="bg-warning hover:bg-accentcolor-400 text-white"
+                        >
+                            Logout
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 };
