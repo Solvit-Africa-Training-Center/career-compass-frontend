@@ -164,7 +164,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       Cookies.set("refreshToken", res.data.tokens.refresh, { expires: 7 }); // Refresh token expires in 7 days
       toast.success("Login successful!");
       // Navigate based on user role
-      const isAdmin = user.role?.some(r => r.name?.toLowerCase() === 'admin');
+      const isAdmin = user.role?.some(r => r.code?.toLowerCase() === 'admin');
       navigate(isAdmin ? "/admin" : "/dashboard");
     } catch (err: unknown) {
       console.error('Login error:', err);
