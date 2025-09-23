@@ -30,32 +30,50 @@ interface Program {
   level?: string;
   language?: string;
   description?: string;
+  institutionWebsite?: string;
 }
 
-interface BackendProgram {
-  id: number;
+// Backend API types based on provided schemas
+interface ProgramApi {
+  id: string;
+  institution_id: string;
   name: string;
   description: string;
-  duration: string;
+  duration: number;
   language: string;
-  level: string;
-  institution: {
-    id: number;
-    name: string;
-    location: string;
-  };
-  campuses: Array<{
-    id: number;
-    name: string;
-    location: string;
-  }>;
-  intakes: Array<{
-    id: number;
-    intake_date: string;
-    deadline: string;
-    available_seats: number;
-    status: string;
-  }>;
+  is_active: boolean;
+  institution: string;
+}
+
+interface InstitutionApi {
+  id: string;
+  official_name: string;
+  aka: string;
+  type: string;
+  country: string;
+  website: string;
+  is_verified: boolean;
+  is_active: boolean;
+}
+
+interface IntakeApi {
+  id: string;
+  program_id: string;
+  start_month: string;
+  application_deadline: string; // e.g. 2025-09-23
+  seats: number;
+  is_open: boolean;
+  is_active: boolean;
+  program: string;
+}
+
+interface CampusApi {
+  id: number;
+  name: string;
+  city: string;
+  address: string;
+  is_active: boolean;
+  institution: string; // institution id (uuid)
 }
 
 interface ProgramsListProps {
@@ -63,46 +81,6 @@ interface ProgramsListProps {
   programs?: Program[];
   onApply?: (programId: string) => void;
 }
-
-const transformBackendProgram = (backendProgram: BackendProgram): Program => {
-  const latestIntake = backendProgram.intakes?.[0] || {};
-  const deadline = new Date(latestIntake.deadline || '');
-  const now = new Date();
-  const timeDiff = deadline.getTime() - now.getTime();
-  const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
-  
-  let timeToClose = 'Closed';
-  let isUrgent = false;
-  let status: 'Open' | 'Closed' = 'Closed';
-  
-  if (latestIntake.status === 'open' && daysLeft > 0) {
-    status = 'Open';
-    if (daysLeft <= 7) {
-      timeToClose = `${daysLeft} days to close`;
-      isUrgent = true;
-    } else if (daysLeft <= 30) {
-      timeToClose = `${Math.ceil(daysLeft / 7)} weeks to close`;
-    } else {
-      timeToClose = `${Math.ceil(daysLeft / 30)} months to close`;
-    }
-  }
-  
-  return {
-    id: backendProgram.id.toString(),
-    title: backendProgram.name,
-    institution: backendProgram.institution?.name || 'Unknown Institution',
-    location: backendProgram.campuses?.[0]?.location || backendProgram.institution?.location || 'Unknown Location',
-    seatsRemain: latestIntake.available_seats || 0,
-    deadline: deadline.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
-    timeToClose,
-    status,
-    isUrgent,
-    duration: backendProgram.duration,
-    level: backendProgram.level,
-    language: backendProgram.language,
-    description: backendProgram.description
-  };
-};
 
 const ProgramsList: React.FC<ProgramsListProps> = ({ 
   title = "Programs related to your interest",
@@ -126,60 +104,93 @@ const ProgramsList: React.FC<ProgramsListProps> = ({
     }
   }, [propPrograms]);
 
+  const getTimeMeta = (deadlineIso?: string, isOpen?: boolean) => {
+    if (!deadlineIso || !isOpen) return { status: 'Closed' as const, timeToClose: 'Closed', isUrgent: false };
+    const deadline = new Date(deadlineIso);
+    const now = new Date();
+    const msLeft = deadline.getTime() - now.getTime();
+    const daysLeft = Math.ceil(msLeft / (1000 * 3600 * 24));
+    if (daysLeft <= 0) return { status: 'Closed' as const, timeToClose: 'Closed', isUrgent: false };
+    let timeToClose = '';
+    let isUrgent = false;
+    if (daysLeft <= 7) {
+      timeToClose = `${daysLeft} days to close`;
+      isUrgent = true;
+    } else if (daysLeft <= 30) {
+      timeToClose = `${Math.ceil(daysLeft / 7)} weeks to close`;
+    } else {
+      timeToClose = `${Math.ceil(daysLeft / 30)} months to close`;
+    }
+    return { status: 'Open' as const, timeToClose, isUrgent };
+  };
+
   const fetchPrograms = async () => {
     try {
       setLoading(true);
-      const [programsResponse, intakesResponse] = await Promise.all([
+      const [programsRes, intakesRes, institutionsRes, campusesRes] = await Promise.all([
         CallApi.get(backend_path.GET_PROGRAM),
-        CallApi.get(backend_path.GET_PROGRAM_INTAKE)
+        CallApi.get(backend_path.GET_PROGRAM_INTAKE),
+        CallApi.get(backend_path.GET_INSTITUTION),
+        CallApi.get(backend_path.GET_CAMPUS)
       ]);
-      
-      const backendPrograms = programsResponse.data.results || programsResponse.data || [];
-      const intakes = intakesResponse.data || [];
-      
-      const transformedPrograms = backendPrograms.map((program: any) => {
-        const programIntakes = intakes.filter((intake: any) => intake.program === program.id);
-        const latestIntake = programIntakes[0] || {};
-        
-        const deadline = latestIntake.application_deadline ? new Date(latestIntake.application_deadline) : new Date();
-        const now = new Date();
-        const timeDiff = deadline.getTime() - now.getTime();
-        const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        
-        let timeToClose = 'Closed';
-        let isUrgent = false;
-        let status: 'Open' | 'Closed' = 'Closed';
-        
-        if (latestIntake.is_open && daysLeft > 0) {
-          status = 'Open';
-          if (daysLeft <= 7) {
-            timeToClose = `${daysLeft} days to close`;
-            isUrgent = true;
-          } else if (daysLeft <= 30) {
-            timeToClose = `${Math.ceil(daysLeft / 7)} weeks to close`;
-          } else {
-            timeToClose = `${Math.ceil(daysLeft / 30)} months to close`;
-          }
-        }
-        
+
+      const programsData: ProgramApi[] = (programsRes.data.results || programsRes.data || []) as ProgramApi[];
+      const intakesData: IntakeApi[] = (intakesRes.data.results || intakesRes.data || []) as IntakeApi[];
+      const institutionsData: InstitutionApi[] = (institutionsRes.data.results || institutionsRes.data || []) as InstitutionApi[];
+      const campusesData: CampusApi[] = (campusesRes.data.results || campusesRes.data || []) as CampusApi[];
+
+      const institutionById = new Map<string, InstitutionApi>();
+      institutionsData.forEach(i => institutionById.set(i.id, i));
+
+      const intakesByProgram = new Map<string, IntakeApi[]>();
+      intakesData.forEach(intake => {
+        const pid = intake.program_id || intake.program;
+        if (!pid) return;
+        const list = intakesByProgram.get(pid) || [];
+        list.push(intake);
+        intakesByProgram.set(pid, list);
+      });
+      // sort intakes per program by application_deadline desc (latest first)
+      intakesByProgram.forEach(list => list.sort((a, b) => new Date(b.application_deadline).getTime() - new Date(a.application_deadline).getTime()));
+
+      const campusesByInstitution = new Map<string, CampusApi[]>();
+      campusesData.forEach(c => {
+        const list = campusesByInstitution.get(c.institution) || [];
+        list.push(c);
+        campusesByInstitution.set(c.institution, list);
+      });
+
+      const transformed: Program[] = programsData.map(p => {
+        const institution = institutionById.get(p.institution_id) || null;
+        const programIntakes = intakesByProgram.get(p.id) || [];
+        const latestIntake = programIntakes[0];
+        const { status, timeToClose, isUrgent } = getTimeMeta(latestIntake?.application_deadline, latestIntake?.is_open);
+        const seatsRemain = latestIntake?.seats ? Number(latestIntake.seats) : 0;
+        const deadlineText = latestIntake?.application_deadline
+          ? new Date(latestIntake.application_deadline).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
+          : 'N/A';
+        const institutionName = institution?.official_name || institution?.aka || 'Unknown Institution';
+        const campusCity = (campusesByInstitution.get(p.institution_id) || [])[0]?.city;
+        const location = campusCity || institution?.country || 'Unknown Location';
+
         return {
-          id: program.id.toString(),
-          title: program.name,
-          institution: program.institution_name || 'Unknown Institution',
-          location: program.location || 'Unknown Location',
-          seatsRemain: latestIntake.seats || 0,
-          deadline: deadline.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
+          id: p.id,
+          title: p.name,
+          institution: institutionName,
+          location,
+          seatsRemain,
+          deadline: deadlineText,
           timeToClose,
           status,
           isUrgent,
-          duration: program.duration,
-          level: program.level,
-          language: program.language,
-          description: program.description
+          duration: p.duration != null ? String(p.duration) : undefined,
+          language: p.language,
+          description: p.description,
+          institutionWebsite: institution?.website || undefined
         };
       });
-      
-      setPrograms(transformedPrograms);
+
+      setPrograms(transformed);
     } catch (error) {
       console.error('Error fetching programs:', error);
       toast.error('Failed to load programs');

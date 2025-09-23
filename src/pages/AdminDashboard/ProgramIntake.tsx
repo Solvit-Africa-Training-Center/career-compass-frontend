@@ -125,6 +125,7 @@ const ProgramIntake = () => {
       const token = localStorage.getItem('accessToken');
       const payload = {
         program_id: formData.program_id,
+        program: formData.program_id,
         start_month: formData.start_month,
         application_deadline: formData.application_deadline,
         seats: parseInt(formData.seats),
@@ -177,7 +178,6 @@ const ProgramIntake = () => {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
       const payload = {
-        program_id: formData.program_id,
         program: formData.program_id,
         start_month: formData.start_month,
         application_deadline: formData.application_deadline,
@@ -241,7 +241,7 @@ const ProgramIntake = () => {
   const openEditDialog = (intake: ProgramIntake) => {
     setSelectedIntake(intake);
     setFormData({
-      program_id: intake.program || '',
+      program_id: intake.program_id || intake.program || '',
       start_month: intake.start_month || '',
       application_deadline: intake.application_deadline || '',
       seats: intake.seats.toString() || '',
@@ -267,7 +267,12 @@ const ProgramIntake = () => {
       return 'No Program Assigned';
     }
     
-    const program = programs.find(p => p.id === programId || p.id === programId.replace(/-/g, ''));
+    const program = programs.find(p => 
+      p.id === programId || 
+      p.id === programId.replace(/-/g, '') ||
+      p.id?.replace(/-/g, '') === programId?.replace(/-/g, '')
+    );
+    console.log('Looking for program:', programId, 'Found:', program, 'Available programs:', programs.map(p => ({id: p.id, name: p.name})));
     return program?.name || `Unknown Program (${programId})`;
   };
 
@@ -286,7 +291,7 @@ const ProgramIntake = () => {
     }
     
     return intakes.filter(intake => {
-      const programName = getProgramName(intake.program).toLowerCase();
+      const programName = getProgramName(intake.program_id || intake.program).toLowerCase();
       const startMonth = intake.start_month.toLowerCase();
       const deadline = formatDate(intake.application_deadline).toLowerCase();
       const seats = intake.seats.toString();
@@ -433,7 +438,7 @@ const ProgramIntake = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-600">Program</label>
-                    <p className="text-sm font-semibold">{getProgramName(selectedIntake.program)}</p>
+                    <p className="text-sm font-semibold">{getProgramName(selectedIntake.program_id || selectedIntake.program)}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-600">Start Month</label>
@@ -633,7 +638,7 @@ const ProgramIntake = () => {
             ) : (
               currentIntakes.map((intake) => (
                 <TableRow key={intake.id} className="hover:bg-gray-50">
-                  <TableCell className="font-medium text-gray-900">{getProgramName(intake.program)}</TableCell>
+                  <TableCell className="font-medium text-gray-900">{getProgramName(intake.program_id || intake.program)}</TableCell>
                   <TableCell className="hidden sm:table-cell text-gray-700">{intake.start_month}</TableCell>
                   <TableCell className="hidden md:table-cell text-gray-700">{formatDate(intake.application_deadline)}</TableCell>
                   <TableCell className="hidden lg:table-cell text-gray-700">{intake.seats.toLocaleString()}</TableCell>

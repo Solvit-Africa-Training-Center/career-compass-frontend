@@ -135,7 +135,7 @@ export const majorsDatabase: Major[] = [
     difficulty: 'Hard',
     duration: 4,
     averageSalary: { entry: 75000, mid: 95000, senior: 130000 },
-    rwandanUniversities: ['University of Rwanda', 'AUCA', 'Carnegie Mellon University Rwanda']
+    rwandanUniversities: ['University of Rwanda', 'AUCA', 'Mount Kigali']
   },
   {
     id: 'eng',

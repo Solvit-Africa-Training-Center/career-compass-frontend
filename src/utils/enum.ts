@@ -55,7 +55,7 @@ export const backend_path={
     GET_CAMPUS_ID:'catalog/campuses/',
     DELETE_CAMPUS:'catalog/campuses/',
 
-    //CAMPUS FEATURE
+    //PROGRAM FEATURE
     GET_FEATURE:'catalog/features/',
     ADD_FEATURE:'catalog/features/',
     UPDATE_FEATURE:'catalog/features/',

@@ -24,7 +24,7 @@ const TranscriptForm: React.FC<TranscriptFormProps> = ({ onSubmit, initialData }
   const [errors, setErrors] = useState<string[]>([]);
 
   const gradeOptions = Object.keys(gradeToGPA);
-  const semesterOptions = ['Fall', 'Spring', 'Summer', 'Winter'];
+  const semesterOptions = ['Semester 1', 'Semester 2', 'Semester 3'];
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear - i);
 
@@ -108,7 +108,7 @@ const TranscriptForm: React.FC<TranscriptFormProps> = ({ onSubmit, initialData }
             type="text"
             value={institution}
             onChange={(e) => setInstitution(e.target.value)}
-            placeholder="e.g., Springfield High School"
+            placeholder="e.g., GS Munanira"
             className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primarycolor-500 focus:border-transparent text-sm ${
               isDark 
                 ? 'bg-primarycolor-700 border-gray-600 text-white placeholder-gray-400' 
