@@ -111,14 +111,14 @@ export const personalityQuestions: PersonalityQuestion[] = [
 
 // Sample Academic Subjects
 export const commonSubjects: Subject[] = [
-  { id: '1', name: 'Mathematics', grade: 'A', creditHours: 4, semester: 'Fall', year: 2023 },
-  { id: '2', name: 'Physics', grade: 'B+', creditHours: 4, semester: 'Fall', year: 2023 },
-  { id: '3', name: 'Chemistry', grade: 'A-', creditHours: 4, semester: 'Spring', year: 2024 },
-  { id: '4', name: 'Biology', grade: 'B', creditHours: 3, semester: 'Spring', year: 2024 },
-  { id: '5', name: 'English Literature', grade: 'A', creditHours: 3, semester: 'Fall', year: 2023 },
-  { id: '6', name: 'History', grade: 'B+', creditHours: 3, semester: 'Spring', year: 2024 },
-  { id: '7', name: 'Computer Science', grade: 'A+', creditHours: 4, semester: 'Fall', year: 2023 },
-  { id: '8', name: 'Economics', grade: 'B', creditHours: 3, semester: 'Spring', year: 2024 }
+  { id: '1', name: 'Mathematics', grade: 'A', creditHours: 4, semester: 'Semester 1', year: 2023 },
+  { id: '2', name: 'Physics', grade: 'B+', creditHours: 4, semester: 'Semester 1', year: 2023 },
+  { id: '3', name: 'Chemistry', grade: 'A-', creditHours: 4, semester: 'Semester 2', year: 2024 },
+  { id: '4', name: 'Biology', grade: 'B', creditHours: 3, semester: 'Semester 2', year: 2024 },
+  { id: '5', name: 'English Literature', grade: 'A', creditHours: 3, semester: 'Semester 1', year: 2023 },
+  { id: '6', name: 'History', grade: 'B+', creditHours: 3, semester: 'Semester 2', year: 2024 },
+  { id: '7', name: 'Computer Science', grade: 'A+', creditHours: 4, semester: 'Semester 1', year: 2023 },
+  { id: '8', name: 'Economics', grade: 'B', creditHours: 3, semester: 'Semester 2', year: 2024 }
 ];
 
 // REB-Aligned Major Database
@@ -134,7 +134,7 @@ export const majorsDatabase: Major[] = [
     rebPathway: 'mathematics_science_1',
     difficulty: 'Hard',
     duration: 4,
-    averageSalary: { entry: 75000, mid: 95000, senior: 130000 },
+    averageSalary: { entry: 250000, mid: 800000, senior: 1300000 },
     rwandanUniversities: ['University of Rwanda', 'AUCA', 'Mount Kigali']
   },
   {
@@ -147,7 +147,7 @@ export const majorsDatabase: Major[] = [
     rebPathway: 'mathematics_science_1',
     difficulty: 'Hard',
     duration: 4,
-    averageSalary: { entry: 68000, mid: 85000, senior: 115000 },
+    averageSalary: { entry: 680000, mid: 850000, senior: 1150000 },
     rwandanUniversities: ['University of Rwanda', 'INES-Ruhengeri']
   },
   {
@@ -160,7 +160,7 @@ export const majorsDatabase: Major[] = [
     rebPathway: 'mathematics_science_1',
     difficulty: 'Hard',
     duration: 4,
-    averageSalary: { entry: 60000, mid: 80000, senior: 110000 },
+    averageSalary: { entry: 600000, mid: 800000, senior: 1100000 },
     rwandanUniversities: ['University of Rwanda', 'AUCA']
   },
 
@@ -175,7 +175,7 @@ export const majorsDatabase: Major[] = [
     rebPathway: 'mathematics_science_2',
     difficulty: 'Very Hard',
     duration: 6,
-    averageSalary: { entry: 80000, mid: 120000, senior: 200000 },
+    averageSalary: { entry: 800000, mid: 1200000, senior: 2000000 },
     rwandanUniversities: ['University of Rwanda']
   },
   {
@@ -188,7 +188,7 @@ export const majorsDatabase: Major[] = [
     rebPathway: 'mathematics_science_2',
     difficulty: 'Hard',
     duration: 4,
-    averageSalary: { entry: 50000, mid: 70000, senior: 95000 },
+    averageSalary: { entry: 500000, mid: 700000, senior: 950000 },
     rwandanUniversities: ['University of Rwanda', 'AUCA']
   },
   {
@@ -201,7 +201,7 @@ export const majorsDatabase: Major[] = [
     rebPathway: 'mathematics_science_2',
     difficulty: 'Moderate',
     duration: 4,
-    averageSalary: { entry: 45000, mid: 65000, senior: 85000 },
+    averageSalary: { entry: 450000, mid: 650000, senior: 850000 },
     rwandanUniversities: ['University of Rwanda']
   },
 
@@ -216,7 +216,7 @@ export const majorsDatabase: Major[] = [
     rebPathway: 'arts_humanities',
     difficulty: 'Hard',
     duration: 4,
-    averageSalary: { entry: 55000, mid: 85000, senior: 150000 },
+    averageSalary: { entry: 550000, mid: 850000, senior: 1500000 },
     rwandanUniversities: ['University of Rwanda', 'Mount Kenya University']
   },
   {
@@ -229,7 +229,7 @@ export const majorsDatabase: Major[] = [
     rebPathway: 'arts_humanities',
     difficulty: 'Moderate',
     duration: 4,
-    averageSalary: { entry: 50000, mid: 75000, senior: 110000 },
+    averageSalary: { entry: 500000, mid: 750000, senior: 1100000 },
     rwandanUniversities: ['University of Rwanda', 'AUCA']
   },
   {
@@ -242,7 +242,7 @@ export const majorsDatabase: Major[] = [
     rebPathway: 'arts_humanities',
     difficulty: 'Moderate',
     duration: 4,
-    averageSalary: { entry: 45000, mid: 65000, senior: 85000 },
+    averageSalary: { entry: 450000, mid: 650000, senior: 850000 },
     rwandanUniversities: ['University of Rwanda', 'AUCA']
   },
 
@@ -257,7 +257,7 @@ export const majorsDatabase: Major[] = [
     rebPathway: 'languages',
     difficulty: 'Moderate',
     duration: 4,
-    averageSalary: { entry: 40000, mid: 60000, senior: 80000 },
+    averageSalary: { entry: 400000, mid: 600000, senior: 800000 },
     rwandanUniversities: ['University of Rwanda', 'AUCA']
   },
   {
@@ -270,7 +270,7 @@ export const majorsDatabase: Major[] = [
     rebPathway: 'languages',
     difficulty: 'Moderate',
     duration: 4,
-    averageSalary: { entry: 42000, mid: 62000, senior: 85000 },
+    averageSalary: { entry: 420000, mid: 620000, senior: 850000 },
     rwandanUniversities: ['University of Rwanda', 'AUCA']
   }
 ];

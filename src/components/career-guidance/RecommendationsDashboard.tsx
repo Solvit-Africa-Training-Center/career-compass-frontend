@@ -94,7 +94,8 @@ const RecommendationsDashboard: React.FC<RecommendationsProps> = ({
                 </span>
               </div>
               <div className="flex items-center">
-                <DollarSign className={`w-3 h-3 mr-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
+                {/* <DollarSign className={`w-3 h-3 mr-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} /> */}
+                {/* <p className={`w-3 h-3 mr-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}> RWF </p> */}
                 <span className={isDark ? 'text-gray-300' : 'text-gray-600'}>
                   {formatSalary(topMatch.major.averageSalary.entry)}
                 </span>
