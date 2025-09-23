@@ -166,7 +166,10 @@ const Campuses = () => {
   };
 
   const getInstitutionName = (institutionId: string) => {
-    const institution = institutions.find(inst => inst.id === institutionId);
+    const normalizedId = institutionId.replace(/-/g, "");
+    const institution = institutions.find(
+      (inst) => inst.id.replace(/-/g, "") === normalizedId
+    );
     return institution?.official_name || institutionId;
   };
 
