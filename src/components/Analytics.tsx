@@ -131,14 +131,89 @@ const Analytics: React.FC<AnalyticsProps> = ({
 };
 
 // Export preset configurations
-export const StudentDashboardAnalytics: React.FC<Partial<AnalyticsProps>> = (props) => (
-  <Analytics 
-    stats={defaultStudentStats}
-    deadlines={defaultDeadlines}
-    showDeadlines={true}
-    {...props}
-  />
-);
+export const StudentDashboardAnalytics: React.FC<Partial<AnalyticsProps>> = (props) => {
+  const [studentStats, setStudentStats] = React.useState(defaultStudentStats);
+  const [realDeadlines, setRealDeadlines] = React.useState<DeadlineItem[]>([]);
+
+  React.useEffect(() => {
+    const fetchStudentStats = async () => {
+      try {
+        const [programsRes, intakesRes] = await Promise.all([
+          CallApi.get(backend_path.GET_PROGRAM),
+          CallApi.get(backend_path.GET_PROGRAM_INTAKE)
+        ]);
+        
+        const programs = programsRes.data || [];
+        const intakes = intakesRes.data || [];
+        
+        const openIntakes = intakes.filter((intake: any) => intake.is_open);
+        const upcomingDeadlines = intakes.filter((intake: any) => {
+          const deadline = new Date(intake.application_deadline);
+          return intake.is_open && deadline > new Date();
+        });
+        
+        setStudentStats([
+          {
+            title: 'Available Programs',
+            value: programs.length.toString(),
+            change: '',
+            changeType: 'neutral',
+            icon: 'applications',
+            color: 'yellow'
+          },
+          {
+            title: 'Open Applications',
+            value: openIntakes.length.toString(),
+            change: '',
+            changeType: 'neutral',
+            icon: 'eligibility',
+            color: 'green'
+          },
+          {
+            title: 'Upcoming Deadlines',
+            value: upcomingDeadlines.length.toString(),
+            change: '',
+            changeType: 'neutral',
+            icon: 'deadlines',
+            color: 'red'
+          }
+        ]);
+        
+        const deadlineItems = upcomingDeadlines
+          .sort((a: any, b: any) => new Date(a.application_deadline).getTime() - new Date(b.application_deadline).getTime())
+          .slice(0, 3)
+          .map((intake: any) => {
+            const deadline = new Date(intake.application_deadline);
+            const daysLeft = Math.ceil((deadline.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            const program = programs.find((p: any) => p.id === intake.program);
+            
+            return {
+              id: intake.id,
+              title: program?.name || 'Unknown Program',
+              subtitle: 'Application Deadline',
+              daysLeft,
+              priority: daysLeft <= 7 ? 'urgent' : daysLeft <= 14 ? 'important' : 'normal'
+            };
+          });
+        
+        setRealDeadlines(deadlineItems);
+      } catch (error) {
+        console.error('Error fetching student stats:', error);
+      }
+    };
+
+    fetchStudentStats();
+  }, []);
+
+  return (
+    <Analytics 
+      stats={studentStats}
+      deadlines={realDeadlines}
+      showDeadlines={true}
+      {...props}
+    />
+  );
+};
 
 export const ProgramsDashboardAnalytics: React.FC<Partial<AnalyticsProps>> = (props) => {
   const [programStats, setProgramStats] = React.useState(defaultProgramStats);
@@ -146,16 +221,18 @@ export const ProgramsDashboardAnalytics: React.FC<Partial<AnalyticsProps>> = (pr
   React.useEffect(() => {
     const fetchProgramStats = async () => {
       try {
-        const response = await CallApi.get(backend_path.GET_PROGRAM);
-        const programs = response.data.results || response.data;
+        const [programsRes, intakesRes] = await Promise.all([
+          CallApi.get(backend_path.GET_PROGRAM),
+          CallApi.get(backend_path.GET_PROGRAM_INTAKE)
+        ]);
+        
+        const programs = programsRes.data || [];
+        const intakes = intakesRes.data || [];
         
         const totalPrograms = programs.length;
-        const openPrograms = programs.filter((p: any) => 
-          p.intakes?.some((intake: any) => intake.status === 'open')
-        ).length;
-        const totalSeats = programs.reduce((sum: number, p: any) => 
-          sum + (p.intakes?.reduce((intakeSum: number, intake: any) => 
-            intakeSum + (intake.available_seats || 0), 0) || 0), 0
+        const openIntakes = intakes.filter((intake: any) => intake.is_open);
+        const totalSeats = intakes.reduce((sum: number, intake: any) => 
+          sum + (intake.seats || 0), 0
         );
 
         setProgramStats([
@@ -168,8 +245,8 @@ export const ProgramsDashboardAnalytics: React.FC<Partial<AnalyticsProps>> = (pr
             color: 'yellow'
           },
           {
-            title: 'Open Programs',
-            value: openPrograms.toString(),
+            title: 'Open Intakes',
+            value: openIntakes.length.toString(),
             change: '',
             changeType: 'neutral',
             icon: 'eligibility',

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Plus, Edit, Trash2, Eye, Search } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 interface Campus {
   id: string;
   institution: string;
+  institution_name?: string;
   name: string;
   city: string;
   address: string;
@@ -30,6 +31,8 @@ const Campuses = () => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [selectedCampus, setSelectedCampus] = useState<Campus | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     institution: '',
     name: '',
@@ -63,6 +66,7 @@ const Campuses = () => {
       const res = await CallApi.get(backend_path.GET_INSTITUTION, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log('Institutions data:', res.data);
       setInstitutions(res.data || []);
     } catch (error: any) {
       if (error?.response?.status === 404) {
@@ -104,7 +108,14 @@ const Campuses = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
-      await CallApi.put(`${backend_path.UPDATE_CAMPUS}${selectedCampus.id}/`, formData, {
+      const payload = {
+        institution: formData.institution.replace(/-/g, ''),
+        name: formData.name,
+        city: formData.city,
+        address: formData.address
+      };
+      console.log('Updating campus data:', payload);
+      await CallApi.put(`${backend_path.UPDATE_CAMPUS}${selectedCampus.id}/`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Campus updated successfully');
@@ -112,7 +123,8 @@ const Campuses = () => {
       setSelectedCampus(null);
       resetForm();
       fetchCampuses();
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Campus update error:', error.response?.data);
       toast.error('Failed to update campus');
     } finally {
       setLoading(false);
@@ -135,14 +147,17 @@ const Campuses = () => {
       toast.success('Campus deleted successfully');
       setDeleteOpen(false);
       setDeleteId(null);
-      setDeleteOpen(false);
-      setDeleteId(null);
       fetchCampuses();
     } catch (error) {
       toast.error('Failed to delete campus');
     } finally {
       setLoading(false);
     }
+  };
+
+  const openViewDialog = (campus: Campus) => {
+    setSelectedCampus(campus);
+    setViewOpen(true);
   };
 
   const openEditDialog = (campus: Campus) => {
@@ -165,10 +180,27 @@ const Campuses = () => {
     });
   };
 
-  const getInstitutionName = (institutionId: string) => {
-    const institution = institutions.find(inst => inst.id === institutionId);
-    return institution?.official_name || institutionId;
+  const getInstitutionName = (campus: Campus) => {
+    if (campus.institution_name) return campus.institution_name;
+    const institutionId = campus.institution;
+    const institution = institutions.find(inst => 
+      inst.id === institutionId || 
+      inst.id === institutionId?.replace(/-/g, '') ||
+      inst.id?.replace(/-/g, '') === institutionId?.replace(/-/g, '')
+    );
+    console.log('Looking for institution:', institutionId, 'Available institutions:', institutions.map(i => i.id), 'Found:', institution);
+    return institution?.official_name || 'Unknown Institution';
   };
+
+  const filteredCampuses = useMemo(() => {
+    if (!searchTerm) return campuses;
+    return campuses.filter(campus => 
+      campus.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      getInstitutionName(campus).toLowerCase().includes(searchTerm.toLowerCase()) ||
+      campus.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      campus.address.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [campuses, searchTerm, institutions]);
 
   useEffect(() => {
     fetchCampuses();
@@ -265,6 +297,40 @@ const Campuses = () => {
           </DialogContent>
         </Dialog>
 
+        {/* View Campus Dialog */}
+        <Dialog open={viewOpen} onOpenChange={setViewOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Eye className="w-5 h-5" />
+                Campus Details
+              </DialogTitle>
+            </DialogHeader>
+            {selectedCampus && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Campus Name</label>
+                    <p className="text-sm font-semibold">{selectedCampus.name}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Institution</label>
+                    <p className="text-sm">{getInstitutionName(selectedCampus)}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">City</label>
+                    <p className="text-sm">{selectedCampus.city}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Address</label>
+                    <p className="text-sm">{selectedCampus.address}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
         {/* Edit Campus Dialog */}
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
           <DialogContent className="sm:max-w-lg">
@@ -314,6 +380,22 @@ const Campuses = () => {
         </Dialog>
       </div>
 
+      {/* Search Bar */}
+      <div className="flex items-center space-x-2">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Search campuses..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <div className="text-sm text-gray-600">
+          {filteredCampuses.length} of {campuses.length} campuses
+        </div>
+      </div>
+
       <div className="bg-white rounded-lg border">
         <Table>
           <TableHeader>
@@ -330,21 +412,31 @@ const Campuses = () => {
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-8">Loading...</TableCell>
               </TableRow>
-            ) : campuses.length === 0 ? (
+            ) : filteredCampuses.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">No campuses found</TableCell>
+                <TableCell colSpan={5} className="text-center py-8">
+                  {searchTerm ? 'No campuses found matching your search.' : 'No campuses found'}
+                </TableCell>
               </TableRow>
             ) : (
-              campuses.map((campus) => (
+              filteredCampuses.map((campus) => (
                 <TableRow key={campus.id} className="hover:bg-gray-50">
                   <TableCell className="font-medium text-gray-900">{campus.name}</TableCell>
                   <TableCell className="hidden sm:table-cell text-gray-700">
-                    {getInstitutionName(campus.institution)}
+                    {getInstitutionName(campus)}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-gray-700">{campus.city}</TableCell>
                   <TableCell className="hidden lg:table-cell text-gray-700">{campus.address}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openViewDialog(campus)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"

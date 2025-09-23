@@ -40,9 +40,8 @@ const ProgramCard: React.FC<ProgramCardProps> = ({ program, onApply }) => {
     return program.isUrgent ? 'text-red-500' : 'text-primarycolor-500';
   };
 
-  const canApply = program.status === 'Open';
-  const hasWebsite = Boolean(program.institutionWebsite);
-  const applyLabel = hasWebsite ? 'Apply on Institution Site' : 'Apply Now';
+  const canApply = program.status === 'Open' && Boolean(program.institutionWebsite);
+  const applyLabel = program.institutionWebsite ? 'Apply on Institution Site' : 'Apply Now';
 
   return (
     <div className={`p-4 rounded-lg border transition-all hover:shadow-md ${
@@ -133,25 +132,17 @@ const ProgramCard: React.FC<ProgramCardProps> = ({ program, onApply }) => {
 
       <div className="flex space-x-2">
         {canApply ? (
-          hasWebsite ? (
-            <a
-              href={program.institutionWebsite}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors bg-primarycolor-600 text-white hover:bg-primarycolor-700 text-center`}
-            >
-              {applyLabel}
-            </a>
-          ) : (
-            <button
-              onClick={() => onApply?.(program.id)}
-              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors bg-primarycolor-600 text-white hover:bg-primarycolor-700`}
-            >
-              {applyLabel}
-            </button>
-          )
+          <a
+            href={program.institutionWebsite}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors bg-primarycolor-600 text-white hover:bg-primarycolor-700 text-center`}
+          >
+            {applyLabel}
+          </a>
         ) : (
           <button
+            onClick={() => onApply?.(program.id)}
             disabled
             className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors bg-gray-300 text-gray-500 cursor-not-allowed`}
           >
