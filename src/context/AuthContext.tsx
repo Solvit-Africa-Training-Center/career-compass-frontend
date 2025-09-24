@@ -166,7 +166,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       toast.success("Login successful!");
       // Navigate based on user role
       const isAdmin = user.role?.some(r => r.code?.toLowerCase() === 'admin');
-      navigate(isAdmin ? "/admin" : "/dashboard");
+      navigate(user.role[0]==="admin" ? "/admin" : "/dashboard");
     } catch (err: unknown) {
       console.error('Login error:', err);
       // Log detailed error response
