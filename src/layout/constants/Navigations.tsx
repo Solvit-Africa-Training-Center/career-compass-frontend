@@ -34,12 +34,12 @@ export const STUDENT_SIDEBAR_LINKS: SidebarLink[] = [
         path:'/programs',
         icon:<GraduationCap size={20} strokeWidth={2.5} />
     },
-    {
-        key:'applications',
-        label:'Applications',
-        path:'/applications',
-        icon:<FileText size={20} strokeWidth={2.5} />
-    },
+    // {
+    //     key:'applications',
+    //     label:'Applications',
+    //     path:'/applications',
+    //     icon:<FileText size={20} strokeWidth={2.5} />
+    // },
     // {
     //     key:'guidance',
     //     label:'Career Guidance',

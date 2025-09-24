@@ -159,14 +159,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("refreshToken", res.data.tokens.refresh);
       
       // Set cookies with appropriate expiration
-      Cookies.set("accessToken", res.data.tokens.access, { expires: 1 }); // 1 day for access token
-      Cookies.set("refreshToken", res.data.tokens.refresh, { expires: 7 }); // 7 days for refresh token
+      Cookies.set("accessToken", res.data.tokens.access, { expires: 1 }); 
+      Cookies.set("refreshToken", res.data.tokens.refresh, { expires: 7 });
       Cookies.set("accessToken", res.data.tokens.access);
       Cookies.set("refreshToken", res.data.tokens.refresh, { expires: 7 }); // Refresh token expires in 7 days
       toast.success("Login successful!");
       // Navigate based on user role
-      const isAdmin = user.role?.some(r => r.code?.toLowerCase() === 'admin');
-      navigate(user.role[0]==="admin" ? "/admin" : "/dashboard");
+      const isAdmin = user.role?.includes('admin');
+      console.log(user.role)
+      console.log(isAdmin)
+      navigate(isAdmin ? "/admin" : "/dashboard");
     } catch (err: unknown) {
       console.error('Login error:', err);
       // Log detailed error response
