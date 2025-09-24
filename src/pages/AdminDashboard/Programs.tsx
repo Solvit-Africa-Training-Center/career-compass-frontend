@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
@@ -7,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import CallApi from '@/utils/callApi';
 import { backend_path } from '@/utils/enum';
 import { toast } from 'sonner';
+import ProgramWizard from './ProgramWizard';
 
 interface Program {
   id: string;
@@ -23,10 +25,12 @@ interface Institution {
 }
 
 const Programs = () => {
+  const navigate = useNavigate();
   const [programs, setPrograms] = useState<Program[]>([]);
   const [institutions, setInstitutions] = useState<Institution[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [wizardOpen, setWizardOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -85,7 +89,6 @@ const Programs = () => {
         is_active: formData.is_active,
         institution: formData.institution_id
       };
-      console.log('Sending program data:', payload);
       await CallApi.post(backend_path.ADD_PROGRAM, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -94,7 +97,6 @@ const Programs = () => {
       resetForm();
       fetchPrograms();
     } catch (error: any) {
-      console.error('Program creation error:', error.response?.data);
       if (error?.response?.status === 400) {
         const errorMsg = error.response?.data?.detail || error.response?.data?.message || 'Invalid data provided';
         toast.error(`Validation error: ${errorMsg}`);
@@ -107,9 +109,7 @@ const Programs = () => {
   };
 
   const handleUpdateProgram = async () => {
-    if (!selectedProgram) {
-      return;
-    }
+    if (!selectedProgram) return;
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
@@ -122,7 +122,6 @@ const Programs = () => {
         is_active: formData.is_active,
         institution: formData.institution_id
       };
-      console.log('Updating program data:', payload);
       await CallApi.put(`${backend_path.UPDATE_PROGRAM}${selectedProgram.id}/`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -132,7 +131,6 @@ const Programs = () => {
       resetForm();
       fetchPrograms();
     } catch (error: any) {
-      console.error('Program update error:', error.response?.data);
       if (error?.response?.status === 400) {
         const errorMsg = error.response?.data?.detail || error.response?.data?.message || 'Invalid data provided';
         toast.error(`Validation error: ${errorMsg}`);
@@ -193,87 +191,110 @@ const Programs = () => {
   };
 
   const getInstitutionName = (institutionId: string) => {
-    const institution = institutions.find(inst => inst.id === institutionId);
+    const normalizedId = institutionId.replace(/-/g, '');
+    const institution = institutions.find(inst => inst.id.replace(/-/g, '') === normalizedId);
     return institution?.official_name || institutionId;
   };
 
-  useEffect(() => {
+  const handleViewProgram = (programId: string) => {
+    navigate(`/admin/programs/${programId}`);
+  };
+
+  const handleWizardComplete = () => {
+    setWizardOpen(false);
     fetchPrograms();
-    fetchInstitutions();
+    toast.success('Program created successfully!');
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      await fetchInstitutions();
+      await fetchPrograms();
+    };
+    loadData();
   }, []);
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold text-primarycolor-500">Programs</h1>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-primarycolor-500 hover:bg-primarycolor-600 text-white">
-              <Plus className="w-4 h-4" />
-              Add Program
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Add New Program</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <select
-                value={formData.institution_id}
-                onChange={(e) => setFormData({ ...formData, institution_id: e.target.value })}
-                className="w-full p-2 border rounded-md"
-              >
-                <option value="">Select Institution</option>
-                {institutions.map((institution) => (
-                  <option key={institution.id} value={institution.id}>
-                    {institution.official_name}
-                  </option>
-                ))}
-              </select>
-              <Input
-                placeholder="Program Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-              <textarea
-                placeholder="Description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full p-2 border rounded-md h-20 resize-none"
-              />
-              <Input
-                type="number"
-                placeholder="Duration (in months)"
-                value={formData.duration}
-                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-              />
-              <Input
-                placeholder="Language"
-                value={formData.language}
-                onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-              />
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={formData.is_active}
-                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                  className="rounded"
-                />
-                <span>Active Program</span>
-              </label>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button 
-                onClick={handleAddProgram} 
-                disabled={loading || !formData.institution_id || !formData.name}
-                className="bg-primarycolor-500 hover:bg-primarycolor-600"
-              >
-                {loading ? 'Adding...' : 'Add Program'}
+        <div className="flex gap-2">
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="border-primarycolor-500 text-primarycolor-500 hover:bg-primarycolor-50">
+                <Plus className="w-4 h-4" />
+                Quick Add
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Add New Program</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <select
+                  value={formData.institution_id}
+                  onChange={(e) => setFormData({ ...formData, institution_id: e.target.value })}
+                  className="w-full p-2 border rounded-md"
+                >
+                  <option value="">Select Institution</option>
+                  {institutions.map((institution) => (
+                    <option key={institution.id} value={institution.id}>
+                      {institution.official_name}
+                    </option>
+                  ))}
+                </select>
+                <Input
+                  placeholder="Program Name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                />
+                <textarea
+                  placeholder="Description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full p-2 border rounded-md h-20 resize-none"
+                />
+                <Input
+                  type="number"
+                  placeholder="Duration (in months)"
+                  value={formData.duration}
+                  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                />
+                <Input
+                  placeholder="Language"
+                  value={formData.language}
+                  onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                />
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={formData.is_active}
+                    onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                    className="rounded"
+                  />
+                  <span>Active Program</span>
+                </label>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+                <Button 
+                  onClick={handleAddProgram} 
+                  disabled={loading || !formData.institution_id || !formData.name}
+                  className="bg-primarycolor-500 hover:bg-primarycolor-600"
+                >
+                  {loading ? 'Adding...' : 'Add Program'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <Button 
+            onClick={() => setWizardOpen(true)}
+            className="bg-primarycolor-500 hover:bg-primarycolor-600 text-white"
+          >
+            <Plus className="w-4 h-4" />
+            Add Program (Full Setup)
+          </Button>
+        </div>
 
         {/* Delete Confirmation Dialog */}
         <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
@@ -371,6 +392,17 @@ const Programs = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Program Wizard Dialog */}
+        <Dialog open={wizardOpen} onOpenChange={setWizardOpen}>
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+            <ProgramWizard 
+              institutions={institutions}
+              onComplete={handleWizardComplete}
+              onCancel={() => setWizardOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="bg-white rounded-lg border">
@@ -407,8 +439,18 @@ const Programs = () => {
                       <Button
                         size="sm"
                         variant="outline"
+                        onClick={() => handleViewProgram(program.id)}
+                        className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700"
+                        title="View Details"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
                         onClick={() => openEditDialog(program)}
                         className="h-8 w-8 p-0"
+                        title="Edit"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -417,6 +459,7 @@ const Programs = () => {
                         variant="outline"
                         onClick={() => handleDeleteProgram(program.id)}
                         className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                        title="Delete"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

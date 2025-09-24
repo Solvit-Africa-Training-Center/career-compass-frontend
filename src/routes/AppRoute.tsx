@@ -27,6 +27,7 @@ import Students from "@/pages/AdminDashboard/Students";
 import { CareerGuidance } from "@/components/career-guidance";
 import Chatbot from "@/components/Chatbot";
 import ProgramIntake from "@/pages/AdminDashboard/ProgramIntake";
+import ProgramDetailsPage from "@/pages/AdminDashboard/ProgramDetailsPage";
 const AppRoute: React.FC = () => {
   const { authUser } = useAuth();
   const isAuthenticated = !!authUser;
@@ -160,45 +161,14 @@ const AppRoute: React.FC = () => {
               }
             />
             <Route
-              path="/admin/program-fees"
+              path="/admin/programs/:id"
               element={
                 <Layout>
-                  <ProgramFees />
+                  <ProgramDetailsPage />
                 </Layout>
               }
             />
-            <Route
-              path="/admin/program-features"
-              element={
-                <Layout>
-                  <ProgramFeatures />
-                </Layout>
-              }
-            />
-            <Route
-              path="/admin/program-intakes"
-              element={
-                <Layout>
-                  <ProgramIntake />
-                </Layout>
-              }
-            />
-            {/* <Route
-              path="/admin/program-requirements"
-              element={
-                <Layout>
-                  <ProgramRequirements />
-                </Layout>
-              }
-            /> */}
-            <Route
-              path="/admin/admission-requirements"
-              element={
-                <Layout>
-                  <AdmissionRequirements />
-                </Layout>
-              }
-            />
+
             <Route
               path="/admin/analytics"
               element={

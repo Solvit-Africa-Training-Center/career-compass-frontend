@@ -98,36 +98,6 @@ export const ADMIN_SIDEBAR_LINKS: SidebarLink[] = [
         icon:<BookOpen size={20} strokeWidth={2.5}/>
     },
     {
-        key:'program-fees',
-        label:'Program Fees',
-        path:'/admin/program-fees',
-        icon:<DollarSign size={20} strokeWidth={2.5}/>
-    },
-    {
-        key:'program-features',
-        label:'Program Features',
-        path:'/admin/program-features',
-        icon:<Star size={20} strokeWidth={2.5}/>
-    },
-    // {
-    //     key:'program-requirements',
-    //     label:'Program Requirements',
-    //     path:'/admin/program-requirements',
-    //     icon:<CheckSquare size={20} strokeWidth={2.5}/>
-    // },
-    {
-        key:'program-intakes',
-        label:'Program Intakes',
-        path:'/admin/program-intakes',
-        icon:<CalendarDays size={20} strokeWidth={2.5}/>
-    },
-    {
-        key:'admission-requirements',
-        label:'Admission',
-        path:'/admin/admission-requirements',
-        icon:<ClipboardList size={20} strokeWidth={2.5}/>
-    },
-    {
         key:'analytics',
         label:'Analytics',
         path:'/admin/analytics',
